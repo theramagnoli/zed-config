@@ -64,32 +64,45 @@ detect_target() {
     fi
 }
 
-render_keymap() {
-    sed "s/{{primary}}/$PRIMARY/g" "$KEYMAP_TEMPLATE"
-}
-
 require_settings_tool() {
     [ -f "$SETTINGS_TOOL" ] || die "missing $SETTINGS_TOOL"
-    command -v python3 >/dev/null 2>&1 || die "python3 is required to merge platform settings"
+    command -v python3 >/dev/null 2>&1 || die "python3 is required to normalize JSON configuration"
+}
+
+normalize_json() {
+    require_settings_tool
+    python3 "$SETTINGS_TOOL" normalize "$1" "$2"
+}
+
+render_keymap() {
+    destination_file=$1
+    rendered_temp=$(mktemp)
+    sed "s/{{primary}}/$PRIMARY/g" "$KEYMAP_TEMPLATE" > "$rendered_temp"
+    if normalize_json "$rendered_temp" "$destination_file"; then
+        rm -f "$rendered_temp"
+    else
+        rm -f "$rendered_temp"
+        return 1
+    fi
 }
 
 render_settings() {
     destination_file=$1
+    require_settings_tool
     if [ -f "$SETTINGS_OVERLAY" ]; then
-        require_settings_tool
         python3 "$SETTINGS_TOOL" render "$SETTINGS_FILE" "$SETTINGS_OVERLAY" "$destination_file"
     else
-        cp "$SETTINGS_FILE" "$destination_file"
+        python3 "$SETTINGS_TOOL" normalize "$SETTINGS_FILE" "$destination_file"
     fi
 }
 
 capture_settings() {
     source_file=$1
+    require_settings_tool
     if [ -f "$SETTINGS_OVERLAY" ]; then
-        require_settings_tool
         python3 "$SETTINGS_TOOL" capture "$source_file" "$SETTINGS_FILE" "$SETTINGS_OVERLAY"
     else
-        cp "$source_file" "$SETTINGS_FILE"
+        python3 "$SETTINGS_TOOL" normalize "$source_file" "$SETTINGS_FILE"
     fi
 }
 
@@ -115,13 +128,27 @@ mirror_optional_file() {
     fi
 }
 
+mirror_optional_json_file() {
+    source_file=$1
+    destination_file=$2
+    if [ -f "$source_file" ]; then
+        mkdir -p "$(dirname "$destination_file")"
+        normalize_json "$source_file" "$destination_file"
+    else
+        rm -f "$destination_file"
+    fi
+}
+
 mirror_optional_dir() {
     source_dir=$1
     destination_dir=$2
     rm -rf "$destination_dir"
     if [ -d "$source_dir" ]; then
+        require_settings_tool
         mkdir -p "$(dirname "$destination_dir")"
         cp -R "$source_dir" "$destination_dir"
+        find "$destination_dir" -type f -name '*.json' \
+            -exec python3 "$SETTINGS_TOOL" normalize '{}' '{}' \;
     fi
 }
 
@@ -141,10 +168,10 @@ pull() {
     mkdir -p "$ZED_CONFIG_DIR"
     backup_safe_files
     render_settings "$ZED_CONFIG_DIR/settings.json"
-    render_keymap > "$ZED_CONFIG_DIR/keymap.json"
+    render_keymap "$ZED_CONFIG_DIR/keymap.json"
     mirror_optional_file "$EXTRAS_DIR/AGENTS.md" "$ZED_CONFIG_DIR/AGENTS.md"
-    mirror_optional_file "$EXTRAS_DIR/tasks.json" "$ZED_CONFIG_DIR/tasks.json"
-    mirror_optional_file "$EXTRAS_DIR/debug.json" "$ZED_DEBUG_FILE"
+    mirror_optional_json_file "$EXTRAS_DIR/tasks.json" "$ZED_CONFIG_DIR/tasks.json"
+    mirror_optional_json_file "$EXTRAS_DIR/debug.json" "$ZED_DEBUG_FILE"
     mirror_optional_dir "$EXTRAS_DIR/themes" "$ZED_CONFIG_DIR/themes"
     mirror_optional_dir "$EXTRAS_DIR/snippets" "$ZED_CONFIG_DIR/snippets"
     printf 'Applied %s configuration to %s\n' "$PLATFORM" "$ZED_CONFIG_DIR"
@@ -157,15 +184,22 @@ push() {
 
     # Promote this machine's primary modifier back into the portable token.
     # The boundary rule avoids changing action names such as "ctrl::Action".
+    keymap_temp=$(mktemp)
     sed -E "s/(^|[^[:alnum:]_])$PRIMARY([^[:alnum:]_]|$)/\\1{{primary}}\\2/g" \
-        "$ZED_CONFIG_DIR/keymap.json" > "$KEYMAP_TEMPLATE"
+        "$ZED_CONFIG_DIR/keymap.json" > "$keymap_temp"
+    if normalize_json "$keymap_temp" "$KEYMAP_TEMPLATE"; then
+        rm -f "$keymap_temp"
+    else
+        rm -f "$keymap_temp"
+        return 1
+    fi
     # keymap.json used to be a platform-specific source file. The template
     # supersedes it, so remove it once it is tracked as deleted in Git.
     rm -f "$REPO_DIR/keymap.json"
     mkdir -p "$EXTRAS_DIR"
     mirror_optional_file "$ZED_CONFIG_DIR/AGENTS.md" "$EXTRAS_DIR/AGENTS.md"
-    mirror_optional_file "$ZED_CONFIG_DIR/tasks.json" "$EXTRAS_DIR/tasks.json"
-    mirror_optional_file "$ZED_DEBUG_FILE" "$EXTRAS_DIR/debug.json"
+    mirror_optional_json_file "$ZED_CONFIG_DIR/tasks.json" "$EXTRAS_DIR/tasks.json"
+    mirror_optional_json_file "$ZED_DEBUG_FILE" "$EXTRAS_DIR/debug.json"
     mirror_optional_dir "$ZED_CONFIG_DIR/themes" "$EXTRAS_DIR/themes"
     mirror_optional_dir "$ZED_CONFIG_DIR/snippets" "$EXTRAS_DIR/snippets"
     printf 'Captured %s configuration into %s\n' "$PLATFORM" "$REPO_DIR"
@@ -180,7 +214,7 @@ status() {
     render_settings "$settings_temp"
     [ -f "$ZED_CONFIG_DIR/settings.json" ] && diff -q "$settings_temp" "$ZED_CONFIG_DIR/settings.json" >/dev/null \
         && printf 'settings: in sync\n' || printf 'settings: differ or missing\n'
-    render_keymap > "$keymap_temp"
+    render_keymap "$keymap_temp"
     [ -f "$ZED_CONFIG_DIR/keymap.json" ] && diff -q "$keymap_temp" "$ZED_CONFIG_DIR/keymap.json" >/dev/null \
         && printf 'keymap: in sync\n' || printf 'keymap: differ or missing\n'
 }

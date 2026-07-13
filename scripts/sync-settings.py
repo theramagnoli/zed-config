@@ -93,16 +93,22 @@ def strip_jsonc(text: str) -> str:
     return "".join(without_trailing_commas)
 
 
-def load_jsonc(path: Path) -> dict[str, Any]:
-    parsed = json.loads(strip_jsonc(path.read_text(encoding="utf-8")))
+def load_jsonc(path: Path) -> Any:
+    return json.loads(strip_jsonc(path.read_text(encoding="utf-8")))
+
+
+def load_jsonc_object(path: Path) -> dict[str, Any]:
+    parsed = load_jsonc(path)
     if not isinstance(parsed, dict):
         raise ValueError(f"expected a JSON object in {path}")
     return parsed
 
 
-def write_json(path: Path, value: dict[str, Any]) -> None:
+def write_json(path: Path, value: Any) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    descriptor, temporary_name = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
+    descriptor, temporary_name = tempfile.mkstemp(
+        prefix=f".{path.name}.", dir=path.parent
+    )
     try:
         with os.fdopen(descriptor, "w", encoding="utf-8") as temporary_file:
             json.dump(value, temporary_file, ensure_ascii=False, indent=4)
@@ -127,13 +133,20 @@ def deep_merge(base: dict[str, Any], overlay: dict[str, Any]) -> dict[str, Any]:
     return result
 
 
+def normalize(input_path: Path, output_path: Path) -> None:
+    write_json(output_path, load_jsonc(input_path))
+
+
 def render(base_path: Path, overlay_path: Path, output_path: Path) -> None:
-    write_json(output_path, deep_merge(load_jsonc(base_path), load_jsonc(overlay_path)))
+    write_json(
+        output_path,
+        deep_merge(load_jsonc_object(base_path), load_jsonc_object(overlay_path)),
+    )
 
 
 def capture(local_path: Path, base_path: Path, overlay_path: Path) -> None:
-    local = load_jsonc(local_path)
-    existing_overlay = load_jsonc(overlay_path)
+    local = load_jsonc_object(local_path)
+    existing_overlay = load_jsonc_object(overlay_path)
     captured_overlay: dict[str, Any] = {}
 
     # Top-level keys present in the overlay are declared platform-specific.
@@ -150,6 +163,10 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest="command", required=True)
 
+    normalize_parser = subparsers.add_parser("normalize")
+    normalize_parser.add_argument("input", type=Path)
+    normalize_parser.add_argument("output", type=Path)
+
     render_parser = subparsers.add_parser("render")
     render_parser.add_argument("base", type=Path)
     render_parser.add_argument("overlay", type=Path)
@@ -161,7 +178,9 @@ def main() -> None:
     capture_parser.add_argument("overlay", type=Path)
 
     arguments = parser.parse_args()
-    if arguments.command == "render":
+    if arguments.command == "normalize":
+        normalize(arguments.input, arguments.output)
+    elif arguments.command == "render":
         render(arguments.base, arguments.overlay, arguments.output)
     else:
         capture(arguments.local, arguments.base, arguments.overlay)

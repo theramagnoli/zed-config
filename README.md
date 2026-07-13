@@ -75,7 +75,7 @@ ZED_CONFIG_DIR="$HOME/.config/zed" ./sync-zed.sh pull
 
 The Windows overlay owns `wsl_connections`. During `pull`, the script merges those connections into the shared settings before writing `%APPDATA%/Zed/settings.json`. During a Windows/WSL `push`, it extracts the same key back into the overlay, so a later Mac update cannot erase the saved WSL projects.
 
-Platform merging requires `python3`; the helper supports Zed's JSON-with-comments and trailing commas.
+JSON processing requires `python3`. The helper accepts Zed's JSON-with-comments and trailing commas as input, then writes strict JSON without comments or trailing commas for settings, keymaps, tasks, debug definitions, themes, and snippets.
 
 ## What is synced
 
