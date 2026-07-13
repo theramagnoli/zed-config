@@ -87,7 +87,7 @@
     "rounded_selection": true,
     "minimum_contrast_for_highlights": 90.0,
     "unnecessary_code_fade": 0.5,
-    "diff_view_style": "split",
+    "diff_view_style": "unified",
     "project_panel": {
         "dock": "right",
         "entry_spacing": "comfortable",
