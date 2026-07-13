@@ -2,12 +2,38 @@
 
 This repository keeps a portable, non-secret Zed setup for macOS and a Windows machine used through WSL.
 
+## Install the command
+
+Install the CLI and completions for Bash, Zsh, and Fish:
+
+```sh
+./sync-zed.sh install
+```
+
+This creates `~/.local/bin/zed-config` as a symlink to this checkout. Ensure `~/.local/bin` is in `PATH`, then restart your shell and use the command from anywhere:
+
+```sh
+zed-config status
+zed-config push-remote
+```
+
+The installer writes completion definitions to the standard user directories for all three shells. Zsh users whose configuration does not already include `~/.zfunc` should add this before their `compinit` call:
+
+```zsh
+fpath=(~/.zfunc $fpath)
+autoload -Uz compinit && compinit
+```
+
+Set `ZED_CONFIG_BIN_DIR` to choose another executable directory. Completion definitions can also be printed for manual setup with `zed-config completion bash`, `zed-config completion zsh`, or `zed-config completion fish`.
+
+Because the installed command points to this checkout, keep the repository in place. Re-running `install` safely refreshes the symlink and completion files.
+
 ## Sync it
 
 For the usual two-machine workflow, keep both checkouts on `main`. After changing Zed settings on one machine:
 
 ```sh
-./sync-zed.sh push-remote
+zed-config push-remote
 ```
 
 This captures the safe configuration bundle, creates a timestamped commit such as `Copia 14/04/2026 7:30 AM`, and pushes `main` to `origin`.
@@ -15,10 +41,10 @@ This captures the safe configuration bundle, creates a timestamped commit such a
 On the other computer:
 
 ```sh
-./sync-zed.sh pull-remote
+zed-config pull-remote
 ```
 
-This requires a clean `main` checkout, fast-forwards from `origin/main`, backs up the current Zed files, and applies the downloaded configuration. `./sync-zed.sh status` reports whether Zed matches the checkout.
+This requires a clean `main` checkout, fast-forwards from `origin/main`, backs up the current Zed files, and applies the downloaded configuration. `zed-config status` reports whether Zed matches the checkout.
 
 The lower-level `push` and `pull` commands remain available when you want to inspect or commit changes manually. Script and documentation commits follow `Se <enunciado>`; automatic configuration snapshots follow `Copia DD/MM/YYYY h:mm AM/PM`. Development branch names use English, for example `agent/add-remote-sync-commands`.
 

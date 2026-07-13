@@ -6,7 +6,16 @@
 
 set -eu
 
-REPO_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+SCRIPT_PATH=$0
+while [ -L "$SCRIPT_PATH" ]; do
+    script_dir=$(CDPATH= cd -- "$(dirname -- "$SCRIPT_PATH")" && pwd)
+    link_target=$(readlink "$SCRIPT_PATH")
+    case "$link_target" in
+        /*) SCRIPT_PATH=$link_target ;;
+        *) SCRIPT_PATH=$script_dir/$link_target ;;
+    esac
+done
+REPO_DIR=$(CDPATH= cd -- "$(dirname -- "$SCRIPT_PATH")" && pwd)
 SETTINGS_FILE="$REPO_DIR/settings.json"
 KEYMAP_TEMPLATE="$REPO_DIR/keymap.json.tmpl"
 EXTRAS_DIR="$REPO_DIR/config"
@@ -240,15 +249,100 @@ pull_remote() {
     pull
 }
 
+completion() {
+    [ "$#" -eq 1 ] || die "usage: zed-config completion <bash|zsh|fish>"
+    case "$1" in
+        bash)
+            cat <<'EOF'
+_zed_config() {
+    local commands="pull push status pull-remote push-remote install completion help"
+    if [ "$COMP_CWORD" -eq 1 ]; then
+        COMPREPLY=($(compgen -W "$commands" -- "${COMP_WORDS[COMP_CWORD]}"))
+    elif [ "$COMP_CWORD" -eq 2 ] && [ "${COMP_WORDS[1]}" = completion ]; then
+        COMPREPLY=($(compgen -W "bash zsh fish" -- "${COMP_WORDS[COMP_CWORD]}"))
+    else
+        COMPREPLY=()
+    fi
+}
+complete -F _zed_config zed-config
+EOF
+            ;;
+        zsh)
+            cat <<'EOF'
+#compdef zed-config
+_zed-config() {
+    local -a commands
+    commands=(
+        'pull:Apply the local bundle to Zed'
+        'push:Capture Zed configuration into the repository'
+        'status:Show sync status'
+        'pull-remote:Update from origin/main and apply configuration'
+        'push-remote:Capture, commit, and push configuration'
+        'install:Install the command and shell completions'
+        'completion:Print a shell completion script'
+        'help:Show help'
+    )
+    if (( CURRENT == 2 )); then
+        _describe 'command' commands
+    elif (( CURRENT == 3 )) && [[ $words[2] == completion ]]; then
+        _values 'shell' bash zsh fish
+    fi
+}
+compdef _zed-config zed-config
+EOF
+            ;;
+        fish)
+            cat <<'EOF'
+complete -c zed-config -f
+complete -c zed-config -n '__fish_use_subcommand' -a pull -d 'Apply the local bundle to Zed'
+complete -c zed-config -n '__fish_use_subcommand' -a push -d 'Capture Zed configuration into the repository'
+complete -c zed-config -n '__fish_use_subcommand' -a status -d 'Show sync status'
+complete -c zed-config -n '__fish_use_subcommand' -a pull-remote -d 'Update from origin/main and apply configuration'
+complete -c zed-config -n '__fish_use_subcommand' -a push-remote -d 'Capture, commit, and push configuration'
+complete -c zed-config -n '__fish_use_subcommand' -a install -d 'Install the command and shell completions'
+complete -c zed-config -n '__fish_use_subcommand' -a completion -d 'Print a shell completion script'
+complete -c zed-config -n '__fish_seen_subcommand_from completion' -a 'bash zsh fish'
+complete -c zed-config -n '__fish_use_subcommand' -a help -d 'Show help'
+EOF
+            ;;
+        *) die "unsupported shell: $1 (expected bash, zsh, or fish)" ;;
+    esac
+}
+
+install_cli() {
+    [ "$#" -eq 0 ] || die "install does not accept arguments"
+    bin_dir=${ZED_CONFIG_BIN_DIR:-$HOME/.local/bin}
+    mkdir -p "$bin_dir"
+    ln -sf "$REPO_DIR/sync-zed.sh" "$bin_dir/zed-config"
+
+    bash_dir=${XDG_DATA_HOME:-$HOME/.local/share}/bash-completion/completions
+    zsh_dir=${ZDOTDIR:-$HOME}/.zfunc
+    fish_dir=${XDG_CONFIG_HOME:-$HOME/.config}/fish/completions
+    mkdir -p "$bash_dir" "$zsh_dir" "$fish_dir"
+    completion bash > "$bash_dir/zed-config"
+    completion zsh > "$zsh_dir/_zed-config"
+    completion fish > "$fish_dir/zed-config.fish"
+
+    printf 'Installed zed-config to %s\n' "$bin_dir/zed-config"
+    case ":$PATH:" in
+        *":$bin_dir:"*) ;;
+        *) printf 'Add %s to PATH to run zed-config from anywhere.\n' "$bin_dir" ;;
+    esac
+    printf 'Shell completions installed. Restart your shell to activate them.\n'
+    printf 'Zsh users: if completion is unavailable, add fpath=(%s $fpath) before compinit.\n' "$zsh_dir"
+}
+
 usage() {
     cat <<'EOF'
-Usage: ./sync-zed.sh <pull|push|status|pull-remote|push-remote>
+Usage: zed-config <command>
 
   pull         Apply the local repository bundle to Zed (with backups).
   push         Capture this machine's Zed configuration into the repository.
   pull-remote  Fast-forward origin/main, then apply its configuration to Zed.
   push-remote  Capture, commit as "Copia <timestamp>", and push origin/main.
   status       Show the detected target and whether it matches the repository.
+  install      Install zed-config and Bash, Zsh, and Fish completions.
+  completion   Print completion code: completion <bash|zsh|fish>.
 
 The bundle includes settings, keymap, AGENTS.md, global tasks/debug definitions,
 local themes, and snippets. It intentionally excludes authentication, databases,
@@ -263,13 +357,14 @@ push-remote uses "Copia DD/MM/YYYY h:mm AM/PM".
 EOF
 }
 
-detect_target
 case "${1:-}" in
-    pull) pull ;;
-    push) push ;;
-    pull-remote) shift; pull_remote "$@" ;;
-    push-remote) shift; push_remote "$@" ;;
-    status) status ;;
+    pull) detect_target; pull ;;
+    push) detect_target; push ;;
+    pull-remote) shift; detect_target; pull_remote "$@" ;;
+    push-remote) shift; detect_target; push_remote "$@" ;;
+    status) detect_target; status ;;
+    install) shift; install_cli "$@" ;;
+    completion) shift; completion "$@" ;;
     -h|--help|help|'') usage ;;
     *) die "unknown command: $1 (try --help)" ;;
 esac
