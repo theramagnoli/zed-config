@@ -42,7 +42,7 @@
     "tab_bar": {
         "show_nav_history_buttons": false,
         "show_tab_bar_buttons": false,
-        "show": false
+        "show": true
     },
     "toolbar": {
         "agent_review": false,
@@ -53,13 +53,13 @@
     },
     "tabs": {
         "close_position": "right",
-        "git_status": false
+        "git_status": true
     },
     "preview_tabs": {
         "enabled": true,
         "enable_preview_from_file_finder": false
     },
-    "max_tabs": 8,
+    "max_tabs": 5,
     "centered_layout": {
         "left_padding": 0.165,
         "right_padding": 0
