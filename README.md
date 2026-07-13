@@ -4,24 +4,23 @@ This repository keeps a portable, non-secret Zed setup for macOS and a Windows m
 
 ## Sync it
 
-From a checkout of this repository:
+For the usual two-machine workflow, keep both checkouts on `main`. After changing Zed settings on one machine:
 
 ```sh
-chmod +x sync-zed.sh
-./sync-zed.sh push      # capture the current machine's Zed configuration
-git diff                # inspect the changes
-git add -A && git commit -m "Update Zed configuration"
-git push
+./sync-zed.sh push-remote
 ```
 
-On the other computer, update the checkout and apply it:
+This captures the safe configuration bundle, creates a timestamped commit such as `Copia 14/04/2026 7:30 AM`, and pushes `main` to `origin`.
+
+On the other computer:
 
 ```sh
-git pull --ff-only
-./sync-zed.sh pull
+./sync-zed.sh pull-remote
 ```
 
-`./sync-zed.sh status` reports the target directory and whether it matches the checkout.
+This requires a clean `main` checkout, fast-forwards from `origin/main`, backs up the current Zed files, and applies the downloaded configuration. `./sync-zed.sh status` reports whether Zed matches the checkout.
+
+The lower-level `push` and `pull` commands remain available when you want to inspect or commit changes manually. Script and documentation commits follow `Se <enunciado>`; automatic configuration snapshots follow `Copia DD/MM/YYYY h:mm AM/PM`. Development branch names use English, for example `agent/add-remote-sync-commands`.
 
 ## Cross-platform keymap
 
