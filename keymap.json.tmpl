@@ -1,7 +1,4 @@
 [
-    // HELPERS
-    // Free keys so SendKeystrokes can call the real toggle without re-firing alt-*.
-    // Empty context = lowest tree level, so the 2nd keystroke always resolves.
     {
         "context": "",
         "bindings": {
@@ -9,186 +6,219 @@
             "f13": "terminal_panel::Toggle",
             "f14": "project_panel::ToggleFocus",
             "f15": "git_panel::ToggleFocus",
-            "f16": "agent::ToggleFocus",
-        },
+            "f16": "agent::ToggleFocus"
+        }
     },
-
-    // CLOSE ACTIONS
-    // When that dock is focused, only close (do not reopen via open bindings).
-    //
-    // Agent: the message box is Editor nested under AgentPanel. Open bindings
-    // match Editor (deeper) and would win over a plain "AgentPanel" close —
-    // so we also close from "Editor && AgentPanel" (same depth as open Editor).
     {
         "context": "ProjectPanel",
         "bindings": {
-            "alt-f": "workspace::CloseAllDocks",
-        },
+            "alt-f": "workspace::CloseAllDocks"
+        }
     },
     {
         "context": "GitPanel",
         "bindings": {
-            "alt-k": "workspace::CloseAllDocks",
-        },
+            "alt-k": "workspace::CloseAllDocks"
+        }
     },
     {
-        // Terminal defaults bind alt-f to shell word-forward (terminal::SendText),
-        // which is deeper than Workspace and steals the project-panel shortcut.
-        // Override here: alt-ñ closes terminal; other alt-* open their panels.
         "context": "Terminal",
         "bindings": {
             "alt-ñ": "workspace::CloseAllDocks",
-            "alt-f": ["workspace::SendKeystrokes", "{{primary}}-alt-d f14"],
-            "alt-k": ["workspace::SendKeystrokes", "{{primary}}-alt-d f15"],
-            "alt-a": ["workspace::SendKeystrokes", "{{primary}}-alt-d f16"],
-        },
+            "alt-f": [
+                "workspace::SendKeystrokes",
+                "{{primary}}-alt-d f14"
+            ],
+            "alt-k": [
+                "workspace::SendKeystrokes",
+                "{{primary}}-alt-d f15"
+            ],
+            "alt-a": [
+                "workspace::SendKeystrokes",
+                "{{primary}}-alt-d f16"
+            ]
+        }
     },
     {
         "context": "AgentPanel",
         "bindings": {
-            "alt-a": "workspace::CloseAllDocks",
-        },
+            "alt-a": "workspace::CloseAllDocks"
+        }
     },
     {
         "context": "Editor && AgentPanel",
         "bindings": {
-            "alt-a": "workspace::CloseAllDocks",
-        },
+            "alt-a": "workspace::CloseAllDocks"
+        }
     },
     {
         "context": "MessageEditor",
         "bindings": {
-            "alt-a": "workspace::CloseAllDocks",
-        },
+            "alt-a": "workspace::CloseAllDocks"
+        }
     },
     {
         "context": "AgentPanel > Markdown",
         "bindings": {
-            "alt-a": "workspace::CloseAllDocks",
-        },
+            "alt-a": "workspace::CloseAllDocks"
+        }
     },
     {
         "context": "AgentPanel > Terminal",
         "bindings": {
-            "alt-a": "workspace::CloseAllDocks",
-        },
+            "alt-a": "workspace::CloseAllDocks"
+        }
     },
-
-    // OPEN — empty git project diff ("No uncommitted changes")
-    // DiffMultibuffer sets key_context to "EmptyPane" when the multibuffer is empty
-    // and focuses that handle (not Editor / GitDiff). Dedicated block so it cannot
-    // be lost inside a large OR expression.
     {
         "context": "EmptyPane",
         "bindings": {
-            "alt-ñ": ["workspace::SendKeystrokes", "{{primary}}-alt-d f13"],
-            "alt-f": ["workspace::SendKeystrokes", "{{primary}}-alt-d f14"],
-            "alt-k": ["workspace::SendKeystrokes", "{{primary}}-alt-d f15"],
-            "alt-a": ["workspace::SendKeystrokes", "{{primary}}-alt-d f16"],
-        },
+            "alt-ñ": [
+                "workspace::SendKeystrokes",
+                "{{primary}}-alt-d f13"
+            ],
+            "alt-f": [
+                "workspace::SendKeystrokes",
+                "{{primary}}-alt-d f14"
+            ],
+            "alt-k": [
+                "workspace::SendKeystrokes",
+                "{{primary}}-alt-d f15"
+            ],
+            "alt-a": [
+                "workspace::SendKeystrokes",
+                "{{primary}}-alt-d f16"
+            ]
+        }
     },
-
-    // OPEN — non-empty git / agent diffs and other center views
     {
         "context": "GitDiff || AgentDiff || MarkdownPreview || ImageViewer || SharedScreen || KeymapEditor || BufferSearchBar || ProjectSearchBar || OutlinePanel || CollabPanel || DebugPanel",
         "bindings": {
-            "alt-ñ": ["workspace::SendKeystrokes", "{{primary}}-alt-d f13"],
-            "alt-f": ["workspace::SendKeystrokes", "{{primary}}-alt-d f14"],
-            "alt-k": ["workspace::SendKeystrokes", "{{primary}}-alt-d f15"],
-            "alt-a": ["workspace::SendKeystrokes", "{{primary}}-alt-d f16"],
-        },
+            "alt-ñ": [
+                "workspace::SendKeystrokes",
+                "{{primary}}-alt-d f13"
+            ],
+            "alt-f": [
+                "workspace::SendKeystrokes",
+                "{{primary}}-alt-d f14"
+            ],
+            "alt-k": [
+                "workspace::SendKeystrokes",
+                "{{primary}}-alt-d f15"
+            ],
+            "alt-a": [
+                "workspace::SendKeystrokes",
+                "{{primary}}-alt-d f16"
+            ]
+        }
     },
-
-    // OPEN — normal Editor (must NOT match AgentPanel's nested editor)
     {
         "context": "Editor && !AgentPanel",
         "bindings": {
-            "alt-ñ": ["workspace::SendKeystrokes", "{{primary}}-alt-d f13"],
-            "alt-f": ["workspace::SendKeystrokes", "{{primary}}-alt-d f14"],
-            "alt-k": ["workspace::SendKeystrokes", "{{primary}}-alt-d f15"],
-            "alt-a": ["workspace::SendKeystrokes", "{{primary}}-alt-d f16"],
-        },
+            "alt-ñ": [
+                "workspace::SendKeystrokes",
+                "{{primary}}-alt-d f13"
+            ],
+            "alt-f": [
+                "workspace::SendKeystrokes",
+                "{{primary}}-alt-d f14"
+            ],
+            "alt-k": [
+                "workspace::SendKeystrokes",
+                "{{primary}}-alt-d f15"
+            ],
+            "alt-a": [
+                "workspace::SendKeystrokes",
+                "{{primary}}-alt-d f16"
+            ]
+        }
     },
-
-    // OPEN — Workspace fallback (other docks, odd center states)
-    // Anchored on Workspace; exclude the target panel so close bindings win there.
     {
         "context": "Workspace && !Terminal",
         "bindings": {
-            "alt-ñ": ["workspace::SendKeystrokes", "{{primary}}-alt-d f13"],
-        },
+            "alt-ñ": [
+                "workspace::SendKeystrokes",
+                "{{primary}}-alt-d f13"
+            ]
+        }
     },
     {
         "context": "Workspace && !ProjectPanel",
         "bindings": {
-            "alt-f": ["workspace::SendKeystrokes", "{{primary}}-alt-d f14"],
-        },
+            "alt-f": [
+                "workspace::SendKeystrokes",
+                "{{primary}}-alt-d f14"
+            ]
+        }
     },
     {
         "context": "Workspace && !GitPanel",
         "bindings": {
-            "alt-k": ["workspace::SendKeystrokes", "{{primary}}-alt-d f15"],
-        },
+            "alt-k": [
+                "workspace::SendKeystrokes",
+                "{{primary}}-alt-d f15"
+            ]
+        }
     },
     {
         "context": "Workspace && !AgentPanel",
         "bindings": {
-            "alt-a": ["workspace::SendKeystrokes", "{{primary}}-alt-d f16"],
-        },
+            "alt-a": [
+                "workspace::SendKeystrokes",
+                "{{primary}}-alt-d f16"
+            ]
+        }
     },
-
-    // PRESERVED BINDINGS
     {
         "context": "ProjectPanel",
         "bindings": {
-            "{{primary}}-s": "workspace::SaveAll",
-        },
+            "{{primary}}-s": "workspace::SaveAll"
+        }
     },
     {
         "context": "Workspace",
         "bindings": {
-            "{{primary}}-s": "workspace::SaveAll",
-        },
+            "{{primary}}-s": "workspace::SaveAll"
+        }
     },
     {
         "context": "Editor",
         "bindings": {
-            "{{primary}}-w": "pane::CloseActiveItem",
-        },
+            "{{primary}}-w": "pane::CloseActiveItem"
+        }
     },
     {
         "context": "Editor && mode == full",
         "bindings": {
-            "alt-z": "editor::ToggleSoftWrap",
-        },
+            "alt-z": "editor::ToggleSoftWrap"
+        }
     },
     {
         "context": "Editor",
         "bindings": {
-            "{{primary}}-r": "editor::Rename",
-        },
+            "{{primary}}-r": "editor::Rename"
+        }
     },
     {
         "context": "Editor",
         "bindings": {
-            "alt-space": "editor::ShowWordCompletions",
-        },
+            "alt-space": "editor::ShowWordCompletions"
+        }
     },
     {
         "context": "Editor",
         "bindings": {
-            "{{primary}}-y": "editor::Redo",
-        },
+            "{{primary}}-y": "editor::Redo"
+        }
     },
     {
         "context": "Editor",
         "bindings": {
-            "alt-enter": "editor::ToggleCodeActions",
-        },
+            "alt-enter": "editor::ToggleCodeActions"
+        }
     },
     {
         "bindings": {
-            "alt-{{primary}}-p": "text_finder::Toggle",
-        },
-    },
+            "alt-{{primary}}-p": "text_finder::Toggle"
+        }
+    }
 ]
