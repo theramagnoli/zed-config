@@ -2,17 +2,17 @@
     "theme": {
         "dark": "macOS Classic Dark",
         "light": "macOS Classic Light",
-        "mode": "dark"
+        "mode": "light"
     },
     "icon_theme": {
         "dark": "Colored Zed Icons Theme Dark",
         "light": "Colored Zed Icons Theme Light",
         "mode": "light"
     },
-    "ui_font_family": "Fira Mono",
+    "ui_font_family": "Monaspace Radon",
     "ui_font_size": 14.0,
     "ui_font_weight": 400.0,
-    "buffer_font_family": "Fira Mono",
+    "buffer_font_family": "Monaspace Radon",
     "buffer_font_features": {
         "calt": true,
         "clig": true,
@@ -34,13 +34,13 @@
         "default_model": {
             "effort": "medium",
             "enable_thinking": true,
-            "model": "gpt-5.6-terra",
+            "model": "gpt-5.6-sol",
             "provider": "openai-subscribed"
         },
         "dock": "right",
         "favorite_models": [
             {
-                "effort": "low",
+                "effort": "medium",
                 "enable_thinking": true,
                 "model": "gpt-5.6-sol",
                 "provider": "openai-subscribed"
