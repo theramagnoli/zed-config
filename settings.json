@@ -333,46 +333,7 @@
         "copilot": {
             "enable_next_edit_suggestions": false
         },
-        "mode": "eager",
-        "disabled_globs": []
-    },
-    "agent": {
-        "default_profile": "write",
-        "favorite_models": [
-            {
-                "provider": "deepseek",
-                "model": "deepseek-v4-pro",
-                "enable_thinking": true,
-                "effort": "high"
-            },
-            {
-                "provider": "deepseek",
-                "model": "deepseek-v4-flash",
-                "enable_thinking": true,
-                "effort": "high"
-            },
-            {
-                "provider": "openai-subscribed",
-                "model": "gpt-5.5",
-                "enable_thinking": true,
-                "effort": "medium"
-            }
-        ],
-        "tool_permissions": {
-            "default": "allow"
-        },
-        "dock": "right",
-        "default_model": {
-            "effort": "low",
-            "enable_thinking": true,
-            "provider": "openai-subscribed",
-            "model": "gpt-5.6-sol"
-        },
-        "inline_assistant_model": {
-            "provider": "zed.dev",
-            "model": "grok-4-fast-reasoning"
-        },
-        "model_parameters": []
+        "mode": "eager"
     },
     "agent_ui_font_size": 14.5,
     "agent_buffer_font_size": 12,
@@ -395,5 +356,41 @@
             "type": "registry"
         }
     },
-    "context_servers": {}
+    "context_servers": {},
+    "agent": {
+        "default_model": {
+            "provider": "openai-subscribed",
+            "model": "gpt-5.6-terra",
+            "enable_thinking": true,
+            "effort": "medium"
+        },
+        "tool_permissions": {
+            "default": "allow"
+        },
+        "favorite_models": [
+            {
+                "provider": "openai-subscribed",
+                "model": "gpt-5.6-sol",
+                "enable_thinking": true,
+                "effort": "low"
+            },
+            {
+                "provider": "openai-subscribed",
+                "model": "gpt-5.6-terra",
+                "enable_thinking": true,
+                "effort": "medium"
+            },
+            {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "enable_thinking": true,
+                "effort": "high"
+            }
+        ],
+        "dock": "right",
+        "commit_message_instructions": "Usa el formato 'Se enunciado', por ejemplo: 'Se corrige error de validación en el formulario de registro', 'Se agrega funcionalidad de búsqueda avanzada', 'Se optimiza rendimiento de la carga de imágenes', 'Se actualiza documentación del proyecto', 'Se implementa autenticación de dos factores', 'Se corrige error de compatibilidad con navegadores antiguos', 'Se mejora experiencia de usuario en la interfaz de administración', 'Se agrega soporte para múltiples idiomas', 'Se refactoriza código para mejorar mantenibilidad', 'Se corrige error de seguridad en la gestión de sesiones', 'Se implementa sistema de notificaciones en tiempo real', etc.",
+        "auto_compact": {
+            "threshold": "80%"
+        }
+    }
 }
