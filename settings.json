@@ -1,17 +1,8 @@
 {
-    "format_on_save": "on",
-    "formatter": "prettier",
-    "language_models": {
-        "opencode": {
-            "show_free_models": false,
-            "show_go_models": true,
-            "show_zen_models": false
-        }
-    },
     "theme": {
-        "mode": "light",
+        "dark": "JetBrains Dark",
         "light": "macOS Classic Light",
-        "dark": "JetBrains Dark"
+        "mode": "light"
     },
     "icon_theme": {
         "dark": "Colored Zed Icons Theme Dark",
@@ -22,122 +13,103 @@
     "ui_font_size": 14.0,
     "ui_font_weight": 400.0,
     "buffer_font_family": "Monaspace Radon",
+    "buffer_font_features": {
+        "calt": true,
+        "clig": true,
+        "liga": true
+    },
     "buffer_font_size": 12,
     "buffer_font_weight": 400.0,
     "buffer_line_height": {
         "custom": 2.2
     },
-    "buffer_font_features": {
-        "liga": true,
-        "clig": true,
-        "calt": true
-    },
+    "agent_buffer_font_size": 12,
+    "agent_ui_font_size": 14.5,
     "text_rendering_mode": "subpixel",
-    "restore_on_startup": "last_workspace",
-    "when_closing_with_no_tabs": "keep_window_open",
-    "title_bar": {
-        "show_menus": false,
-        "show_user_picture": true
+    "agent": {
+        "auto_compact": {
+            "threshold": "80%"
+        },
+        "commit_message_instructions": "Usa el formato 'Se enunciado', por ejemplo: 'Se corrige error de validación en el formulario de registro', 'Se agrega funcionalidad de búsqueda avanzada', 'Se optimiza rendimiento de la carga de imágenes', 'Se actualiza documentación del proyecto', 'Se implementa autenticación de dos factores', 'Se corrige error de compatibilidad con navegadores antiguos', 'Se mejora experiencia de usuario en la interfaz de administración', 'Se agrega soporte para múltiples idiomas', 'Se refactoriza código para mejorar mantenibilidad', 'Se corrige error de seguridad en la gestión de sesiones', 'Se implementa sistema de notificaciones en tiempo real', etc.",
+        "default_model": {
+            "effort": "medium",
+            "enable_thinking": true,
+            "model": "gpt-5.6-terra",
+            "provider": "openai-subscribed"
+        },
+        "dock": "right",
+        "favorite_models": [
+            {
+                "effort": "low",
+                "enable_thinking": true,
+                "model": "gpt-5.6-sol",
+                "provider": "openai-subscribed"
+            },
+            {
+                "effort": "medium",
+                "enable_thinking": true,
+                "model": "gpt-5.6-terra",
+                "provider": "openai-subscribed"
+            },
+            {
+                "effort": "high",
+                "enable_thinking": true,
+                "model": "deepseek-v4-pro",
+                "provider": "deepseek"
+            }
+        ],
+        "tool_permissions": {
+            "default": "allow"
+        }
     },
-    "tab_bar": {
-        "show_nav_history_buttons": false,
-        "show_tab_bar_buttons": false,
-        "show": true
+    "agent_servers": {
+        "codex-acp": {
+            "default_config_options": {
+                "mode": "agent",
+                "model": "gpt-5.6-sol",
+                "reasoning_effort": "high"
+            },
+            "type": "registry"
+        },
+        "grok-build": {
+            "type": "registry"
+        },
+        "opencode": {
+            "default_config_options": {
+                "model": "opencode-go/glm-5.2"
+            },
+            "type": "registry"
+        }
     },
-    "toolbar": {
-        "agent_review": false,
-        "selections_menu": false,
-        "code_actions": false,
-        "quick_actions": false,
-        "breadcrumbs": true
-    },
-    "tabs": {
-        "close_position": "right",
-        "git_status": true
-    },
-    "preview_tabs": {
-        "enabled": true,
-        "enable_preview_from_file_finder": false
-    },
-    "max_tabs": 5,
     "centered_layout": {
         "left_padding": 0.165,
         "right_padding": 0
     },
-    "hide_mouse": "never",
-    "tab_size": 4,
-    "hard_tabs": false,
-    "preferred_line_length": 100,
-    "cursor_shape": "block",
-    "indent_guides": {
-        "enabled": true,
-        "line_width": 1,
-        "active_line_width": 3,
-        "coloring": "fixed",
-        "background_coloring": "disabled"
-    },
-    "inlay_hints": {
-        "enabled": false,
-        "show_type_hints": true
-    },
-    "scrollbar": {
-        "diagnostics": "error",
-        "selected_text": true,
-        "axes": {
-            "horizontal": false
-        }
-    },
-    "rounded_selection": true,
-    "minimum_contrast_for_highlights": 90.0,
-    "unnecessary_code_fade": 0.5,
-    "diff_view_style": "unified",
-    "project_panel": {
-        "dock": "right",
-        "entry_spacing": "comfortable",
-        "hide_root": false
-    },
-    "outline_panel": {
-        "dock": "right"
-    },
-    "git_panel": {
-        "tree_view": false,
-        "dock": "right"
-    },
     "collaboration_panel": {
-        "dock": "right",
-        "button": false
+        "button": false,
+        "dock": "right"
     },
-    "terminal": {
-        "dock": "right",
-        "default_width": 600,
-        "toolbar": {
-            "breadcrumbs": true
-        },
-        "line_height": {
-            "custom": 1.6
-        },
-        "blinking": "on",
-        "scrollbar": {
-            "show": "always"
-        }
-    },
-    "search": {
-        "button": false
-    },
+    "context_servers": {},
+    "cursor_blink": true,
+    "cursor_shape": "block",
     "debugger": {
         "button": true,
         "timeout": 10000
-    },
-    "git": {
-        "branch_picker": {
-            "show_author_name": true
-        }
     },
     "diagnostics": {
         "inline": {
             "enabled": true,
             "min_column": 80
         }
+    },
+    "diff_view_style": "unified",
+    "disable_ai": false,
+    "edit_predictions": {
+        "copilot": {
+            "enable_next_edit_suggestions": false
+        },
+        "mode": "eager",
+        "provider": "copilot"
     },
     "file_types": {
         "XML": [
@@ -146,14 +118,38 @@
             "xaml"
         ]
     },
+    "format_on_save": "on",
+    "formatter": "prettier",
+    "git": {
+        "branch_picker": {
+            "show_author_name": true
+        }
+    },
+    "git_panel": {
+        "dock": "right",
+        "tree_view": false
+    },
+    "hard_tabs": false,
+    "hide_mouse": "never",
+    "indent_guides": {
+        "active_line_width": 3,
+        "background_coloring": "disabled",
+        "coloring": "fixed",
+        "enabled": true,
+        "line_width": 1
+    },
+    "inlay_hints": {
+        "enabled": false,
+        "show_type_hints": true
+    },
+    "language_models": {
+        "opencode": {
+            "show_free_models": false,
+            "show_go_models": true,
+            "show_zen_models": false
+        }
+    },
     "languages": {
-        "Vue.js": {
-            "language_servers": [
-                "vtsls",
-                "vue-language-server",
-                "tailwindcss-language-server"
-            ]
-        },
         "CSS": {
             "language_servers": [
                 "tailwindcss-language-server",
@@ -170,12 +166,6 @@
             "show_edit_predictions": true
         },
         "Python": {
-            "language_servers": [
-                "pylsp",
-                "ruff",
-                "!pyright",
-                "..."
-            ],
             "format_on_save": "on",
             "formatter": [
                 {
@@ -189,7 +179,32 @@
                         "name": "ruff"
                     }
                 }
+            ],
+            "language_servers": [
+                "pylsp",
+                "ruff",
+                "!pyright",
+                "..."
             ]
+        },
+        "TypeScript": {
+            "show_edit_predictions": true,
+            "tab_size": 4
+        },
+        "Vue.js": {
+            "language_servers": [
+                "vtsls",
+                "vue-language-server",
+                "tailwindcss-language-server"
+            ]
+        },
+        "XML": {
+            "prettier": {
+                "allowed": true,
+                "plugins": [
+                    "@prettier/plugin-xml"
+                ]
+            }
         },
         "lsp": {
             "pylsp": {
@@ -207,6 +222,9 @@
                         "isort": {
                             "enabled": false
                         },
+                        "jedi": {
+                            "enabled": true
+                        },
                         "mccabe": {
                             "enabled": false
                         },
@@ -222,13 +240,7 @@
                         "pylint": {
                             "enabled": false
                         },
-                        "yapf": {
-                            "enabled": false
-                        },
                         "pylsp_mypy": {
-                            "enabled": true
-                        },
-                        "jedi": {
                             "enabled": true
                         },
                         "rope": {
@@ -242,6 +254,9 @@
                         },
                         "ruff": {
                             "enabled": false
+                        },
+                        "yapf": {
+                            "enabled": false
                         }
                     }
                 }
@@ -249,13 +264,6 @@
             "ruff": {
                 "initialization_options": {
                     "settings": {
-                        "configurationPreference": "filesystemFirst",
-                        "configuration": {
-                            "format": {
-                                "quote-style": "double",
-                                "skip-magic-trailing-comma": false
-                            }
-                        },
                         "codeAction": {
                             "disableRuleComment": {
                                 "enable": false
@@ -264,39 +272,34 @@
                                 "enable": true
                             }
                         },
+                        "configuration": {
+                            "format": {
+                                "quote-style": "double",
+                                "skip-magic-trailing-comma": false
+                            }
+                        },
+                        "configurationPreference": "filesystemFirst",
+                        "fixAll": true,
+                        "format": {
+                            "preview": true
+                        },
+                        "lineLength": 100,
                         "lint": {
+                            "enable": true,
+                            "extendSelect": [
+                                "I"
+                            ],
                             "select": [
                                 "E4",
                                 "E7",
                                 "E9",
                                 "F"
-                            ],
-                            "extendSelect": [
-                                "I"
-                            ],
-                            "enable": true
+                            ]
                         },
-                        "format": {
-                            "preview": true
-                        },
-                        "fixAll": true,
                         "organizeImports": true,
-                        "showSyntaxErrors": true,
-                        "lineLength": 100
+                        "showSyntaxErrors": true
                     }
                 }
-            }
-        },
-        "TypeScript": {
-            "show_edit_predictions": true,
-            "tab_size": 4
-        },
-        "XML": {
-            "prettier": {
-                "allowed": true,
-                "plugins": [
-                    "@prettier/plugin-xml"
-                ]
             }
         }
     },
@@ -311,86 +314,73 @@
             }
         },
         "vtsls": {
+            "enable_lsp_tasks": true,
             "settings": {
-                "typescript": {
-                    "updateImportsOnFileMove": {
-                        "enabled": "always"
-                    }
-                },
                 "javascript": {
                     "updateImportsOnFileMove": {
                         "enabled": "always"
                     }
+                },
+                "typescript": {
+                    "updateImportsOnFileMove": {
+                        "enabled": "always"
+                    }
                 }
-            },
-            "enable_lsp_tasks": true
-        }
-    },
-    "disable_ai": false,
-    "show_edit_predictions": true,
-    "edit_predictions": {
-        "provider": "copilot",
-        "copilot": {
-            "enable_next_edit_suggestions": false
-        },
-        "mode": "eager"
-    },
-    "agent_ui_font_size": 14.5,
-    "agent_buffer_font_size": 12,
-    "agent_servers": {
-        "grok-build": {
-            "type": "registry"
-        },
-        "codex-acp": {
-            "default_config_options": {
-                "reasoning_effort": "high",
-                "model": "gpt-5.6-sol",
-                "mode": "agent"
-            },
-            "type": "registry"
-        },
-        "opencode": {
-            "default_config_options": {
-                "model": "opencode-go/glm-5.2"
-            },
-            "type": "registry"
-        }
-    },
-    "context_servers": {},
-    "agent": {
-        "default_model": {
-            "provider": "openai-subscribed",
-            "model": "gpt-5.6-terra",
-            "enable_thinking": true,
-            "effort": "medium"
-        },
-        "tool_permissions": {
-            "default": "allow"
-        },
-        "favorite_models": [
-            {
-                "provider": "openai-subscribed",
-                "model": "gpt-5.6-sol",
-                "enable_thinking": true,
-                "effort": "low"
-            },
-            {
-                "provider": "openai-subscribed",
-                "model": "gpt-5.6-terra",
-                "enable_thinking": true,
-                "effort": "medium"
-            },
-            {
-                "provider": "deepseek",
-                "model": "deepseek-v4-pro",
-                "enable_thinking": true,
-                "effort": "high"
             }
-        ],
-        "dock": "right",
-        "commit_message_instructions": "Usa el formato 'Se enunciado', por ejemplo: 'Se corrige error de validación en el formulario de registro', 'Se agrega funcionalidad de búsqueda avanzada', 'Se optimiza rendimiento de la carga de imágenes', 'Se actualiza documentación del proyecto', 'Se implementa autenticación de dos factores', 'Se corrige error de compatibilidad con navegadores antiguos', 'Se mejora experiencia de usuario en la interfaz de administración', 'Se agrega soporte para múltiples idiomas', 'Se refactoriza código para mejorar mantenibilidad', 'Se corrige error de seguridad en la gestión de sesiones', 'Se implementa sistema de notificaciones en tiempo real', etc.",
-        "auto_compact": {
-            "threshold": "80%"
         }
-    }
+    },
+    "max_tabs": 5,
+    "minimum_contrast_for_highlights": 90.0,
+    "outline_panel": {
+        "dock": "right"
+    },
+    "preferred_line_length": 100,
+    "preview_tabs": {
+        "enable_preview_from_file_finder": false,
+        "enabled": true
+    },
+    "project_panel": {
+        "dock": "right",
+        "entry_spacing": "comfortable",
+        "hide_root": false
+    },
+    "restore_on_startup": "last_workspace",
+    "rounded_selection": true,
+    "scrollbar": {
+        "axes": {
+            "horizontal": false
+        },
+        "diagnostics": "error",
+        "selected_text": true
+    },
+    "show_edit_predictions": true,
+    "tab_bar": {
+        "show": true,
+        "show_nav_history_buttons": false,
+        "show_tab_bar_buttons": false
+    },
+    "tab_size": 4,
+    "tabs": {
+        "close_position": "right",
+        "git_status": true
+    },
+    "terminal": {
+        "blinking": "on",
+        "dock": "right",
+        "line_height": {
+            "custom": 1.4
+        }
+    },
+    "title_bar": {
+        "show_menus": false,
+        "show_user_picture": true
+    },
+    "toolbar": {
+        "agent_review": true,
+        "code_actions": false,
+        "quick_actions": false,
+        "selections_menu": false
+    },
+    "unnecessary_code_fade": 0.3,
+    "when_closing_with_no_tabs": "keep_window_open"
 }
