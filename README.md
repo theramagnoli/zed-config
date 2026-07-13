@@ -27,11 +27,11 @@ git pull --ff-only
 
 `keymap.json.tmpl` is the source of truth. It uses `{{primary}}` for the platform's primary shortcut modifier:
 
-| Runtime | Zed directory | `{{primary}}` |
-| --- | --- | --- |
-| macOS | `~/.config/zed` | `cmd` |
-| WSL (Windows-hosted Zed) | Windows `%APPDATA%/Zed` | `ctrl` |
-| Linux | `~/.config/zed` | `ctrl` |
+| Runtime                  | Zed directory           | `{{primary}}` |
+| ------------------------ | ----------------------- | ------------- |
+| macOS                    | `~/.config/zed`         | `cmd`         |
+| WSL (Windows-hosted Zed) | Windows `%APPDATA%/Zed` | `ctrl`        |
+| Linux                    | `~/.config/zed`         | `ctrl`        |
 
 Zed uses `alt` for the macOS Option key as well as the Windows Alt key, so `alt` bindings remain unchanged. The script recognizes WSL and uses `powershell.exe` plus `wslpath` to write to the Windows Zed configuration—not a separate WSL-only config directory.
 
