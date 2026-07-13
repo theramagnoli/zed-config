@@ -1,31 +1,65 @@
-// Zed settings
-//
-// For information on how to configure Zed, see the Zed
-// documentation: https://zed.dev/docs/configuring-zed
-//
-// To see all of Zed's default settings without changing your
-// custom settings, run `zed: open default settings` from the
-// command palette (cmd-shift-p / ctrl-shift-p)
 {
-    "outline_panel": {
-        "dock": "right"
-    },
-    "diff_view_style": "unified",
-    "file_types": {
-        "XML": ["wsdl", "xsd", "xaml"]
-    },
-    "context_servers": {},
-    "agent_servers": {
-        "gemini": {
-            "type": "registry"
-        },
+    "format_on_save": "on",
+    "formatter": "prettier",
+    "language_models": {
         "opencode": {
-            "type": "registry"
+            "show_free_models": false,
+            "show_go_models": true,
+            "show_zen_models": false
         }
     },
-    "hide_mouse": "never",
+    "theme": {
+        "mode": "light",
+        "light": "macOS Classic Light",
+        "dark": "JetBrains Dark"
+    },
+    "icon_theme": {
+        "dark": "Colored Zed Icons Theme Dark",
+        "light": "Colored Zed Icons Theme Light",
+        "mode": "light"
+    },
+    "ui_font_family": "Monaspace Radon",
+    "ui_font_size": 14.0,
+    "ui_font_weight": 400.0,
+    "buffer_font_family": "Monaspace Radon",
+    "buffer_font_size": 12,
+    "buffer_font_weight": 400.0,
+    "buffer_line_height": { "custom": 2.2 },
+    "buffer_font_features": { "liga": true, "clig": true, "calt": true },
     "text_rendering_mode": "subpixel",
-    "show_edit_predictions": true,
+    "restore_on_startup": "last_workspace",
+    "when_closing_with_no_tabs": "keep_window_open",
+    "title_bar": {
+        "show_menus": false,
+        "show_user_picture": true
+    },
+    "tab_bar": {
+        "show_nav_history_buttons": false,
+        "show_tab_bar_buttons": false,
+        "show": false
+    },
+    "toolbar": {
+        "agent_review": false,
+        "selections_menu": false,
+        "code_actions": false,
+        "quick_actions": false,
+        "breadcrumbs": true
+    },
+    "tabs": {
+        "close_position": "right",
+        "git_status": false
+    },
+    "preview_tabs": {
+        "enabled": true,
+        "enable_preview_from_file_finder": false
+    },
+    "max_tabs": 8,
+    "centered_layout": { "left_padding": 0.165, "right_padding": 0 },
+    "hide_mouse": "never",
+    "tab_size": 4,
+    "hard_tabs": false,
+    "preferred_line_length": 100,
+    "cursor_shape": "block",
     "indent_guides": {
         "enabled": true,
         "line_width": 1,
@@ -33,124 +67,81 @@
         "coloring": "fixed",
         "background_coloring": "disabled"
     },
-    "wsl_connections": [
-        {
-            "distro_name": "archlinux",
-            "user": null,
-            "projects": [
-                {
-                    "paths": ["/root"]
-                },
-                {
-                    "paths": ["/root/projects"]
-                },
-                {
-                    "paths": ["/root/projects/personal/savings-app/./"]
-                },
-                {
-                    "paths": ["/root/projects/work/comerbot-rag-library/./"]
-                },
-                {
-                    "paths": ["/root/projects/work/mv-api-comerbot/./"]
-                }
-            ]
-        }
-    ],
-    "preview_tabs": {
+    "inlay_hints": {
         "enabled": false,
-        "enable_preview_from_file_finder": false
+        "show_type_hints": true
     },
-    "agent_ui_font_size": 15.0,
-    "agent_buffer_font_size": 12,
-    "ui_font_weight": 400.0,
-    "edit_predictions": {
-        "provider": "copilot",
-        "copilot": {
-            "enable_next_edit_suggestions": false
-        },
-        "mode": "eager",
-        "disabled_globs": []
+    "scrollbar": {
+        "diagnostics": "error",
+        "selected_text": true,
+        "axes": { "horizontal": false }
     },
-    "minimum_contrast_for_highlights": 70.0,
+    "rounded_selection": true,
+    "minimum_contrast_for_highlights": 90.0,
     "unnecessary_code_fade": 0.5,
-    "cursor_shape": "block",
-    "buffer_font_weight": 400.0,
-    "restore_on_startup": "last_session",
-    "when_closing_with_no_tabs": "keep_window_open",
-    "agent": {
-        "default_profile": "write",
-        "favorite_models": [
-            {
-                "provider": "copilot_chat",
-                "model": "claude-sonnet-4.6",
-                "enable_thinking": false
-            },
-            {
-                "provider": "copilot_chat",
-                "model": "gemini-3-flash-preview",
-                "enable_thinking": false
-            },
-            {
-                "provider": "copilot_chat",
-                "model": "claude-haiku-4.5",
-                "enable_thinking": false
-            }
-        ],
-        "tool_permissions": {
-            "default": "allow"
-        },
-        "dock": "left",
-        "default_model": {
-            "effort": "high",
-            "enable_thinking": true,
-            "provider": "copilot_chat",
-            "model": "gemini-3.1-pro-preview"
-        },
-        "inline_assistant_model": {
-            "provider": "zed.dev",
-            "model": "grok-4-fast-reasoning"
-        },
-        "model_parameters": []
-    },
-    "git_panel": {
-        "tree_view": true,
-        "sort_by_path": true,
-        "dock": "right"
-    },
+    "diff_view_style": "split",
     "project_panel": {
         "dock": "right",
         "entry_spacing": "comfortable",
         "hide_root": false
     },
-    "ui_font_size": 14.0,
-    "ui_line_height": { "custom": 1.5 },
-    "buffer_font_size": 12.0,
-    "buffer_line_height": { "custom": 2.4 },
-    "ui_font_family": ".SystemUIFont",
-    "buffer_font_family": "Consolas",
-    "theme": {
-        "mode": "light",
-        "light": "One Light",
-        "dark": "Jetbrains Darcula Zed Theme"
+    "outline_panel": { "dock": "right" },
+    "git_panel": {
+        "tree_view": false,
+        "dock": "right"
     },
-    "tab_size": 4,
+    "collaboration_panel": { "dock": "right", "button": false },
+    "terminal": {
+        "dock": "right",
+        "default_width": 600,
+        "toolbar": { "breadcrumbs": true },
+        "line_height": { "custom": 1.6 },
+        "blinking": "on",
+        "scrollbar": { "show": "always" }
+    },
+    "search": { "button": false },
+    "debugger": { "button": true, "timeout": 10000 },
+    "git": {
+        "branch_picker": {
+            "show_author_name": true
+        }
+    },
+    "diagnostics": {
+        "inline": { "enabled": true, "min_column": 80 }
+    },
+    "file_types": {
+        "XML": ["wsdl", "xsd", "xaml"]
+    },
     "languages": {
+        "Vue.js": {
+            "language_servers": ["vtsls", "vue-language-server", "tailwindcss-language-server"]
+        },
         "CSS": {
-            "language_servers": ["tailwindcss-language-server"]
+            "language_servers": ["tailwindcss-language-server", "vscode-css-language-server"],
+            "prettier": {
+                "allowed": true,
+                "plugins": ["@prettier/plugin-xml"]
+            }
         },
         "Markdown": {
             "show_edit_predictions": true
         },
-
-        "languages": {
-            "Python": {
-                "language_servers": ["pylsp", "ruff", "!pyright", "..."],
-                "format_on_save": "on",
-                "formatter": [
-                    { "code_actions": { "source.organizeImports.ruff": true, "source.fixAll.ruff": true } },
-                    { "language_server": { "name": "ruff" } }
-                ]
-            }
+        "Python": {
+            "language_servers": ["pylsp", "ruff", "!pyright", "..."],
+            "format_on_save": "on",
+            "formatter": [
+                {
+                    "code_action": "source.organizeImports.ruff"
+                },
+                {
+                    "code_action": "source.fixAll.ruff"
+                },
+                {
+                    "language_server": {
+                        "name": "ruff"
+                    }
+                }
+            ]
         },
         "lsp": {
             "pylsp": {
@@ -180,10 +171,20 @@
                     "settings": {
                         "configurationPreference": "filesystemFirst",
                         "configuration": {
-                            "format": { "quote-style": "double", "skip-magic-trailing-comma": false }
+                            "format": {
+                                "quote-style": "double",
+                                "skip-magic-trailing-comma": false
+                            }
                         },
-                        "codeAction": { "disableRuleComment": { "enable": false }, "fixViolation": { "enable": true } },
-                        "lint": { "select": ["E4", "E7", "E9", "F"], "extendSelect": ["I"], "enable": true },
+                        "codeAction": {
+                            "disableRuleComment": { "enable": false },
+                            "fixViolation": { "enable": true }
+                        },
+                        "lint": {
+                            "select": ["E4", "E7", "E9", "F"],
+                            "extendSelect": ["I"],
+                            "enable": true
+                        },
                         "format": { "preview": true },
                         "fixAll": true,
                         "organizeImports": true,
@@ -194,7 +195,6 @@
             }
         },
         "TypeScript": { "show_edit_predictions": true, "tab_size": 4 },
-        "Vue.js": { "language_servers": ["vtsls"] },
         "XML": {
             "prettier": {
                 "allowed": true,
@@ -202,67 +202,89 @@
             }
         }
     },
-    "tabs": {
-        "close_position": "right",
-        "git_status": false
-    },
-    "title_bar": {
-        "show_menus": false,
-        "show_user_picture": true
-    },
-    "tab_bar": {
-        "show_nav_history_buttons": false,
-        "show_tab_bar_buttons": false,
-        "show": false
-    },
-    "toolbar": {
-        "agent_review": false,
-        "selections_menu": false,
-        "code_actions": false,
-        "quick_actions": false
-    },
-    "max_tabs": 8,
-    "icon_theme": {
-        "dark": "Colored Zed Icons Theme Dark",
-        "light": "Colored Zed Icons Theme Light",
-        "mode": "light"
-    },
-    "inlay_hints": {
-        "enabled": false,
-        "show_type_hints": true
+    "lsp": {
+        "vscode-css-language-server": {
+            "settings": {
+                "css": {
+                    "lint": {
+                        "unknownAtRules": "ignore"
+                    }
+                }
+            }
+        },
+        "vtsls": {
+            "settings": {
+                "typescript": { "updateImportsOnFileMove": { "enabled": "always" } },
+                "javascript": { "updateImportsOnFileMove": { "enabled": "always" } }
+            },
+            "enable_lsp_tasks": true
+        }
     },
     "disable_ai": false,
-    "git": {
-        "branch_picker": {
-            "show_author_name": true
+    "show_edit_predictions": true,
+    "edit_predictions": {
+        "provider": "copilot",
+        "copilot": {
+            "enable_next_edit_suggestions": false
+        },
+        "mode": "eager",
+        "disabled_globs": []
+    },
+    "agent": {
+        "default_profile": "write",
+        "favorite_models": [
+            {
+                "provider": "deepseek",
+                "model": "deepseek-v4-pro",
+                "enable_thinking": true,
+                "effort": "high"
+            },
+            {
+                "provider": "deepseek",
+                "model": "deepseek-v4-flash",
+                "enable_thinking": true,
+                "effort": "high"
+            },
+            {
+                "provider": "openai-subscribed",
+                "model": "gpt-5.5",
+                "enable_thinking": true,
+                "effort": "medium"
+            }
+        ],
+        "tool_permissions": { "default": "allow" },
+        "dock": "right",
+        "default_model": {
+            "effort": "medium",
+            "enable_thinking": true,
+            "provider": "openai-subscribed",
+            "model": "gpt-5.6-terra"
+        },
+        "inline_assistant_model": {
+            "provider": "zed.dev",
+            "model": "grok-4-fast-reasoning"
+        },
+        "model_parameters": []
+    },
+    "agent_ui_font_size": 14.5,
+    "agent_buffer_font_size": 12,
+    "agent_servers": {
+        "grok-build": {
+            "type": "registry"
+        },
+        "codex-acp": {
+            "default_config_options": {
+                "model": "gpt-5.6-terra",
+                "mode": "agent"
+            },
+            "type": "registry"
+        },
+        "opencode": {
+            "default_config_options": {
+                "model": "opencode-go/glm-5.2"
+            },
+            "type": "registry"
         }
     },
-    "notification_panel": { "button": false },
-    "debugger": { "button": true, "timeout": 10000 },
-    "collaboration_panel": { "dock": "right",
-                             "button": false },
-    "search": { "button": false },
-    "preferred_line_length": 120,
-    "hard_tabs": false,
-    "terminal": {
-        "dock": "right"
-    },
-    "diagnostics": {
-        "inline": {
-            "enabled": true,
-            "min_column": 80
-        }
-    },
-    "scrollbar": {
-        "diagnostics": "error",
-        "selected_text": true,
-        "axes": {
-            "horizontal": false
-        }
-    },
-    "rounded_selection": true,
-    "centered_layout": {
-        "left_padding": 0.165,
-        "right_padding": 0
-    }
+    "context_servers": {}
 }
