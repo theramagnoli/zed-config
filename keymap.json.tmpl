@@ -1,0 +1,122 @@
+[
+    // ── Helper: close all docks ──
+    {
+        "context": "",
+        "bindings": {
+            "{{primary}}-alt-d": "workspace::CloseAllDocks",
+        },
+    },
+
+    // ── Close actions (when inside a panel) ──
+    {
+        "context": "ProjectPanel",
+        "bindings": {
+            "alt-f": "workspace::CloseAllDocks",
+        },
+    },
+    {
+        "context": "GitPanel",
+        "bindings": {
+            "alt-k": "workspace::CloseAllDocks",
+        },
+    },
+    {
+        "context": "Terminal",
+        "bindings": {
+            "alt-ñ": "workspace::CloseAllDocks",
+        },
+    },
+    {
+        "context": "AgentPanel",
+        "bindings": {
+            "alt-a": "workspace::CloseAllDocks",
+        },
+    },
+
+    // ── Fallback: direct toggle ──
+    {
+        "context": "Workspace || Editor",
+        "bindings": {
+            "f13": "terminal_panel::Toggle",
+        },
+    },
+    {
+        "context": "Workspace",
+        "bindings": {
+            "alt-f": "project_panel::ToggleFocus",
+            "alt-k": "git_panel::ToggleFocus",
+            "alt-a": "agent::ToggleFocus",
+        },
+    },
+
+    // ── Primary: close all docks, then toggle ──
+    {
+        "context": "Workspace || Editor || Terminal",
+        "bindings": {
+            "alt-ñ": ["workspace::SendKeystrokes", "{{primary}}-alt-d f13"],
+        },
+    },
+    {
+        "context": "Workspace",
+        "bindings": {
+            "alt-f": ["workspace::SendKeystrokes", "{{primary}}-alt-d alt-f"],
+            "alt-k": ["workspace::SendKeystrokes", "{{primary}}-alt-d alt-k"],
+            "alt-a": ["workspace::SendKeystrokes", "{{primary}}-alt-d alt-a"],
+        },
+    },
+
+    // ── Preserved bindings ──
+    {
+        "context": "ProjectPanel",
+        "bindings": {
+            "{{primary}}-s": "workspace::SaveAll",
+        },
+    },
+    {
+        "context": "Workspace",
+        "bindings": {
+            "{{primary}}-s": "workspace::SaveAll",
+        },
+    },
+    {
+        "context": "Editor",
+        "bindings": {
+            "{{primary}}-w": "pane::CloseActiveItem",
+        },
+    },
+    {
+        "context": "Editor && mode == full",
+        "bindings": {
+            "alt-z": "editor::ToggleSoftWrap",
+        },
+    },
+    {
+        "context": "Editor",
+        "bindings": {
+            "{{primary}}-r": "editor::Rename",
+        },
+    },
+    {
+        "context": "Editor",
+        "bindings": {
+            "alt-space": "editor::ShowWordCompletions",
+        },
+    },
+    {
+        "context": "Editor",
+        "bindings": {
+            "{{primary}}-y": "editor::Redo",
+        },
+    },
+    {
+        "context": "Editor",
+        "bindings": {
+            "alt-enter": "editor::ToggleCodeActions",
+        },
+    },
+    {
+        "bindings": {
+            "alt-{{primary}}-p": "text_finder::Toggle"
+        }
+    }
+]

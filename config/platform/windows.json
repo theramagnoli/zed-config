@@ -1,0 +1,25 @@
+{
+    "wsl_connections": [
+        {
+            "distro_name": "archlinux",
+            "user": null,
+            "projects": [
+                {
+                    "paths": ["/root"]
+                },
+                {
+                    "paths": ["/root/projects"]
+                },
+                {
+                    "paths": ["/root/projects/personal/savings-app/./"]
+                },
+                {
+                    "paths": ["/root/projects/work/comerbot-rag-library/./"]
+                },
+                {
+                    "paths": ["/root/projects/work/mv-api-comerbot/./"]
+                }
+            ]
+        }
+    ]
+}
