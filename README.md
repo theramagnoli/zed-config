@@ -31,13 +31,12 @@ Because the installed command points to this checkout, keep the repository in pl
 ## Sync it
 
 For the usual two-machine workflow, keep both checkouts on `main`. After changing Zed settings on one machine:
-After changing Zed settings on one machine:
 
 ```sh
 zed-config push
 ```
 
-This captures the safe configuration bundle, creates a timestamped commit such as `Copia 14/04/2026 7:30 AM`, and pushes `main` to `origin`.
+This captures the safe configuration bundle, creates a timestamped commit such as `Copia 14/04/2026 7:30 AM`, adds an automatic description of the changed settings and synced files, and pushes `main` to `origin`.
 
 On the other computer:
 
@@ -47,7 +46,7 @@ zed-config pull
 
 This requires a clean `main` checkout, fast-forwards from `origin/main`, backs up the current Zed files, and applies the downloaded configuration. `zed-config status` reports whether Zed matches the checkout.
 
-`push-remote` and `pull-remote` remain available as aliases for compatibility. Script and documentation commits follow `Se <enunciado>`; automatic configuration snapshots follow `Copia DD/MM/YYYY h:mm AM/PM`. Development branch names use English, for example `agent/add-remote-sync-commands`.
+`push-remote` and `pull-remote` remain available as aliases for compatibility. Script and documentation commits follow `Se <enunciado>`; automatic configuration snapshots use `Copia DD/MM/YYYY h:mm AM/PM` as their subject and include a generated configuration-change summary in the commit body. Development branch names use English, for example `agent/add-remote-sync-commands`.
 
 ## Cross-platform keymap
 
@@ -71,7 +70,7 @@ ZED_CONFIG_DIR="$HOME/.config/zed" ./sync-zed.sh pull
 
 ## Platform-specific settings
 
-`settings.json` contains the shared configuration. Files under `config/platform/` are overlays whose top-level keys remain specific to that platform.
+`settings.json` contains the shared configuration. Its nested objects are written alphabetically whenever the configuration is captured; the top-level appearance and font settings stay together at the beginning, followed by the remaining settings alphabetically. Files under `config/platform/` are overlays whose top-level keys remain specific to that platform.
 
 The Windows overlay owns `wsl_connections`. During `pull`, the script merges those connections into the shared settings before writing `%APPDATA%/Zed/settings.json`. During a Windows/WSL `push`, it extracts the same key back into the overlay, so a later Mac update cannot erase the saved WSL projects.
 

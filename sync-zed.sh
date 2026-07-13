@@ -257,6 +257,11 @@ snapshot_commit_message() {
     printf 'Copia %s\n' "$timestamp"
 }
 
+snapshot_commit_summary() {
+    require_settings_tool
+    python3 "$SETTINGS_TOOL" staged-summary "$REPO_DIR"
+}
+
 push_remote() {
     [ "$#" -eq 0 ] || die "push does not accept a message; it generates 'Copia DD/MM/YYYY h:mm AM/PM'"
     require_main_checkout
@@ -269,7 +274,8 @@ push_remote() {
         printf 'No configuration changes to commit.\n'
     else
         message=$(snapshot_commit_message)
-        git -C "$REPO_DIR" commit -m "$message"
+        summary=$(snapshot_commit_summary)
+        git -C "$REPO_DIR" commit -m "$message" -m "$summary"
     fi
 
     git -C "$REPO_DIR" push origin main
@@ -367,7 +373,7 @@ usage() {
 Usage: zed-config <command>
 
   pull         Update from the remote, then apply the configuration to Zed.
-  push         Capture the configuration, commit it, and push to the remote.
+  push         Capture, summarize, commit, and push configuration to the remote.
   status       Show the detected target and whether it matches the repository.
   install      Install zed-config and Bash, Zsh, and Fish completions.
   completion   Print completion code: completion <bash|zsh|fish>.
