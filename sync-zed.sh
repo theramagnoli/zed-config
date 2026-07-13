@@ -255,7 +255,7 @@ completion() {
         bash)
             cat <<'EOF'
 _zed_config() {
-    local commands="pull push status pull-remote push-remote install completion help"
+    local commands="pull push status install completion help"
     if [ "$COMP_CWORD" -eq 1 ]; then
         COMPREPLY=($(compgen -W "$commands" -- "${COMP_WORDS[COMP_CWORD]}"))
     elif [ "$COMP_CWORD" -eq 2 ] && [ "${COMP_WORDS[1]}" = completion ]; then
@@ -276,8 +276,6 @@ _zed-config() {
         'pull:Update from origin/main and apply configuration'
         'push:Capture, commit, and push configuration'
         'status:Show sync status'
-        'pull-remote:Alias for pull'
-        'push-remote:Alias for push'
         'install:Install the command and shell completions'
         'completion:Print a shell completion script'
         'help:Show help'
@@ -297,8 +295,6 @@ complete -c zed-config -f
 complete -c zed-config -n '__fish_use_subcommand' -a pull -d 'Update from origin/main and apply configuration'
 complete -c zed-config -n '__fish_use_subcommand' -a push -d 'Capture, commit, and push configuration'
 complete -c zed-config -n '__fish_use_subcommand' -a status -d 'Show sync status'
-complete -c zed-config -n '__fish_use_subcommand' -a pull-remote -d 'Alias for pull'
-complete -c zed-config -n '__fish_use_subcommand' -a push-remote -d 'Alias for push'
 complete -c zed-config -n '__fish_use_subcommand' -a install -d 'Install the command and shell completions'
 complete -c zed-config -n '__fish_use_subcommand' -a completion -d 'Print a shell completion script'
 complete -c zed-config -n '__fish_seen_subcommand_from completion' -a 'bash zsh fish'
@@ -336,10 +332,8 @@ usage() {
     cat <<'EOF'
 Usage: zed-config <command>
 
-  pull         Fast-forward origin/main, then apply its configuration to Zed.
-  push         Capture, commit as "Copia <timestamp>", and push origin/main.
-  pull-remote  Alias for pull (kept for compatibility).
-  push-remote  Alias for push (kept for compatibility).
+  pull         Update from the remote, then apply the configuration to Zed.
+  push         Capture the configuration, commit it, and push to the remote.
   status       Show the detected target and whether it matches the repository.
   install      Install zed-config and Bash, Zsh, and Fish completions.
   completion   Print completion code: completion <bash|zsh|fish>.
@@ -348,12 +342,8 @@ The bundle includes settings, keymap, AGENTS.md, global tasks/debug definitions,
 local themes, and snippets. It intentionally excludes authentication, databases,
 extensions, prompt-library data, logs, caches, and backups.
 
-Run `push` after deliberately changing Zed configuration on either computer;
-review the resulting Git diff before committing. Run `pull` on the other computer.
-
-Remote commands require a main-branch checkout. Development branches use
-English names. Code changes use Spanish "Se <enunciado>" commits;
-push uses "Copia DD/MM/YYYY h:mm AM/PM".
+Run `push` after deliberately changing Zed configuration on either computer.
+Run `pull` on the other computer.
 EOF
 }
 
