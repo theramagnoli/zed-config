@@ -176,13 +176,79 @@ status() {
         && printf 'keymap: in sync\n' || printf 'keymap: differ or missing\n'
 }
 
+require_main_checkout() {
+    git -C "$REPO_DIR" rev-parse --is-inside-work-tree >/dev/null 2>&1 \
+        || die "$REPO_DIR is not a Git repository"
+    git -C "$REPO_DIR" remote get-url origin >/dev/null 2>&1 \
+        || die "Git remote 'origin' is not configured"
+    branch=$(git -C "$REPO_DIR" branch --show-current)
+    [ "$branch" = "main" ] || die "remote sync requires branch 'main' (current: ${branch:-detached HEAD})"
+}
+
+require_clean_checkout() {
+    changes=$(git -C "$REPO_DIR" status --porcelain)
+    [ -z "$changes" ] || die "the repository has uncommitted changes; commit or discard them before pull-remote"
+}
+
+require_only_config_changes() {
+    unrelated=$(git -C "$REPO_DIR" status --porcelain -- . \
+        ':(exclude)settings.json' \
+        ':(exclude)keymap.json.tmpl' \
+        ':(exclude)config/**')
+    [ -z "$unrelated" ] || {
+        printf '%s\n' "$unrelated" >&2
+        die "unrelated repository changes found; commit them separately before push-remote"
+    }
+}
+
+require_current_remote_main() {
+    git -C "$REPO_DIR" fetch origin main
+    local_head=$(git -C "$REPO_DIR" rev-parse HEAD)
+    remote_head=$(git -C "$REPO_DIR" rev-parse origin/main)
+    [ "$local_head" = "$remote_head" ] \
+        || die "local main does not match origin/main; run pull-remote before changing Zed"
+}
+
+snapshot_commit_message() {
+    timestamp=$(date '+%d/%m/%Y %I:%M %p' | sed 's/ 0/ /')
+    printf 'Copia %s\n' "$timestamp"
+}
+
+push_remote() {
+    [ "$#" -eq 0 ] || die "push-remote does not accept a message; it generates 'Copia DD/MM/YYYY h:mm AM/PM'"
+    require_main_checkout
+    require_only_config_changes
+    require_current_remote_main
+    push
+
+    git -C "$REPO_DIR" add -A -- settings.json keymap.json.tmpl config
+    if git -C "$REPO_DIR" diff --cached --quiet -- settings.json keymap.json.tmpl config; then
+        printf 'No configuration changes to commit.\n'
+    else
+        message=$(snapshot_commit_message)
+        git -C "$REPO_DIR" commit -m "$message"
+    fi
+
+    git -C "$REPO_DIR" push origin main
+}
+
+pull_remote() {
+    [ "$#" -eq 0 ] || die "pull-remote does not accept arguments"
+    require_main_checkout
+    require_clean_checkout
+    git -C "$REPO_DIR" pull --ff-only origin main
+    pull
+}
+
 usage() {
     cat <<'EOF'
-Usage: ./sync-zed.sh <pull|push|status>
+Usage: ./sync-zed.sh <pull|push|status|pull-remote|push-remote>
 
-  pull    Apply the safe configuration bundle to Zed (with local backups).
-  push    Capture this machine's safe configuration bundle into the repo.
-  status  Show the detected target and whether it matches the repository.
+  pull         Apply the local repository bundle to Zed (with backups).
+  push         Capture this machine's Zed configuration into the repository.
+  pull-remote  Fast-forward origin/main, then apply its configuration to Zed.
+  push-remote  Capture, commit as "Copia <timestamp>", and push origin/main.
+  status       Show the detected target and whether it matches the repository.
 
 The bundle includes settings, keymap, AGENTS.md, global tasks/debug definitions,
 local themes, and snippets. It intentionally excludes authentication, databases,
@@ -190,6 +256,10 @@ extensions, prompt-library data, logs, caches, and backups.
 
 Run `push` after deliberately changing Zed configuration on either computer;
 review the resulting Git diff before committing. Run `pull` on the other computer.
+
+Remote commands require a main-branch checkout. Development branches use
+English names. Code changes use Spanish "Se <enunciado>" commits;
+push-remote uses "Copia DD/MM/YYYY h:mm AM/PM".
 EOF
 }
 
@@ -197,6 +267,8 @@ detect_target
 case "${1:-}" in
     pull) pull ;;
     push) push ;;
+    pull-remote) shift; pull_remote "$@" ;;
+    push-remote) shift; push_remote "$@" ;;
     status) status ;;
     -h|--help|help|'') usage ;;
     *) die "unknown command: $1 (try --help)" ;;
