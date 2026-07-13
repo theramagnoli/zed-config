@@ -14,7 +14,7 @@ This creates `~/.local/bin/zed-config` as a symlink to this checkout. Ensure `~/
 
 ```sh
 zed-config status
-zed-config push-remote
+zed-config push
 ```
 
 The installer writes completion definitions to the standard user directories for all three shells. Zsh users whose configuration does not already include `~/.zfunc` should add this before their `compinit` call:
@@ -31,9 +31,10 @@ Because the installed command points to this checkout, keep the repository in pl
 ## Sync it
 
 For the usual two-machine workflow, keep both checkouts on `main`. After changing Zed settings on one machine:
+After changing Zed settings on one machine:
 
 ```sh
-zed-config push-remote
+zed-config push
 ```
 
 This captures the safe configuration bundle, creates a timestamped commit such as `Copia 14/04/2026 7:30 AM`, and pushes `main` to `origin`.
@@ -41,12 +42,12 @@ This captures the safe configuration bundle, creates a timestamped commit such a
 On the other computer:
 
 ```sh
-zed-config pull-remote
+zed-config pull
 ```
 
 This requires a clean `main` checkout, fast-forwards from `origin/main`, backs up the current Zed files, and applies the downloaded configuration. `zed-config status` reports whether Zed matches the checkout.
 
-The lower-level `push` and `pull` commands remain available when you want to inspect or commit changes manually. Script and documentation commits follow `Se <enunciado>`; automatic configuration snapshots follow `Copia DD/MM/YYYY h:mm AM/PM`. Development branch names use English, for example `agent/add-remote-sync-commands`.
+`push-remote` and `pull-remote` remain available as aliases for compatibility. Script and documentation commits follow `Se <enunciado>`; automatic configuration snapshots follow `Copia DD/MM/YYYY h:mm AM/PM`. Development branch names use English, for example `agent/add-remote-sync-commands`.
 
 ## Cross-platform keymap
 

@@ -196,7 +196,7 @@ require_main_checkout() {
 
 require_clean_checkout() {
     changes=$(git -C "$REPO_DIR" status --porcelain)
-    [ -z "$changes" ] || die "the repository has uncommitted changes; commit or discard them before pull-remote"
+    [ -z "$changes" ] || die "the repository has uncommitted changes; commit or discard them before pull"
 }
 
 require_only_config_changes() {
@@ -206,7 +206,7 @@ require_only_config_changes() {
         ':(exclude)config/**')
     [ -z "$unrelated" ] || {
         printf '%s\n' "$unrelated" >&2
-        die "unrelated repository changes found; commit them separately before push-remote"
+        die "unrelated repository changes found; commit them separately before push"
     }
 }
 
@@ -215,7 +215,7 @@ require_current_remote_main() {
     local_head=$(git -C "$REPO_DIR" rev-parse HEAD)
     remote_head=$(git -C "$REPO_DIR" rev-parse origin/main)
     [ "$local_head" = "$remote_head" ] \
-        || die "local main does not match origin/main; run pull-remote before changing Zed"
+        || die "local main does not match origin/main; run pull before changing Zed"
 }
 
 snapshot_commit_message() {
@@ -224,7 +224,7 @@ snapshot_commit_message() {
 }
 
 push_remote() {
-    [ "$#" -eq 0 ] || die "push-remote does not accept a message; it generates 'Copia DD/MM/YYYY h:mm AM/PM'"
+    [ "$#" -eq 0 ] || die "push does not accept a message; it generates 'Copia DD/MM/YYYY h:mm AM/PM'"
     require_main_checkout
     require_only_config_changes
     require_current_remote_main
@@ -242,7 +242,7 @@ push_remote() {
 }
 
 pull_remote() {
-    [ "$#" -eq 0 ] || die "pull-remote does not accept arguments"
+    [ "$#" -eq 0 ] || die "pull does not accept arguments"
     require_main_checkout
     require_clean_checkout
     git -C "$REPO_DIR" pull --ff-only origin main
@@ -273,11 +273,11 @@ EOF
 _zed-config() {
     local -a commands
     commands=(
-        'pull:Apply the local bundle to Zed'
-        'push:Capture Zed configuration into the repository'
+        'pull:Update from origin/main and apply configuration'
+        'push:Capture, commit, and push configuration'
         'status:Show sync status'
-        'pull-remote:Update from origin/main and apply configuration'
-        'push-remote:Capture, commit, and push configuration'
+        'pull-remote:Alias for pull'
+        'push-remote:Alias for push'
         'install:Install the command and shell completions'
         'completion:Print a shell completion script'
         'help:Show help'
@@ -294,11 +294,11 @@ EOF
         fish)
             cat <<'EOF'
 complete -c zed-config -f
-complete -c zed-config -n '__fish_use_subcommand' -a pull -d 'Apply the local bundle to Zed'
-complete -c zed-config -n '__fish_use_subcommand' -a push -d 'Capture Zed configuration into the repository'
+complete -c zed-config -n '__fish_use_subcommand' -a pull -d 'Update from origin/main and apply configuration'
+complete -c zed-config -n '__fish_use_subcommand' -a push -d 'Capture, commit, and push configuration'
 complete -c zed-config -n '__fish_use_subcommand' -a status -d 'Show sync status'
-complete -c zed-config -n '__fish_use_subcommand' -a pull-remote -d 'Update from origin/main and apply configuration'
-complete -c zed-config -n '__fish_use_subcommand' -a push-remote -d 'Capture, commit, and push configuration'
+complete -c zed-config -n '__fish_use_subcommand' -a pull-remote -d 'Alias for pull'
+complete -c zed-config -n '__fish_use_subcommand' -a push-remote -d 'Alias for push'
 complete -c zed-config -n '__fish_use_subcommand' -a install -d 'Install the command and shell completions'
 complete -c zed-config -n '__fish_use_subcommand' -a completion -d 'Print a shell completion script'
 complete -c zed-config -n '__fish_seen_subcommand_from completion' -a 'bash zsh fish'
@@ -336,10 +336,10 @@ usage() {
     cat <<'EOF'
 Usage: zed-config <command>
 
-  pull         Apply the local repository bundle to Zed (with backups).
-  push         Capture this machine's Zed configuration into the repository.
-  pull-remote  Fast-forward origin/main, then apply its configuration to Zed.
-  push-remote  Capture, commit as "Copia <timestamp>", and push origin/main.
+  pull         Fast-forward origin/main, then apply its configuration to Zed.
+  push         Capture, commit as "Copia <timestamp>", and push origin/main.
+  pull-remote  Alias for pull (kept for compatibility).
+  push-remote  Alias for push (kept for compatibility).
   status       Show the detected target and whether it matches the repository.
   install      Install zed-config and Bash, Zsh, and Fish completions.
   completion   Print completion code: completion <bash|zsh|fish>.
@@ -353,15 +353,13 @@ review the resulting Git diff before committing. Run `pull` on the other compute
 
 Remote commands require a main-branch checkout. Development branches use
 English names. Code changes use Spanish "Se <enunciado>" commits;
-push-remote uses "Copia DD/MM/YYYY h:mm AM/PM".
+push uses "Copia DD/MM/YYYY h:mm AM/PM".
 EOF
 }
 
 case "${1:-}" in
-    pull) detect_target; pull ;;
-    push) detect_target; push ;;
-    pull-remote) shift; detect_target; pull_remote "$@" ;;
-    push-remote) shift; detect_target; push_remote "$@" ;;
+    pull|pull-remote) shift; detect_target; pull_remote "$@" ;;
+    push|push-remote) shift; detect_target; push_remote "$@" ;;
     status) detect_target; status ;;
     install) shift; install_cli "$@" ;;
     completion) shift; completion "$@" ;;
