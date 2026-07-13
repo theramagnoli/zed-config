@@ -248,8 +248,15 @@ require_current_remote_main() {
     git -C "$REPO_DIR" fetch origin main
     local_head=$(git -C "$REPO_DIR" rev-parse HEAD)
     remote_head=$(git -C "$REPO_DIR" rev-parse origin/main)
-    [ "$local_head" = "$remote_head" ] \
-        || die "local main does not match origin/main; run pull before changing Zed"
+    [ "$local_head" = "$remote_head" ] && return
+
+    if git -C "$REPO_DIR" merge-base --is-ancestor origin/main HEAD; then
+        die "local main is ahead of origin/main; run 'git push origin main' before pushing Zed configuration"
+    fi
+    if git -C "$REPO_DIR" merge-base --is-ancestor HEAD origin/main; then
+        die "local main is behind origin/main; run 'zed-config pull' before changing Zed"
+    fi
+    die "local main and origin/main have diverged; reconcile the branches before pushing Zed configuration"
 }
 
 snapshot_commit_message() {
