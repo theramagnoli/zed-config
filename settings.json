@@ -7,7 +7,7 @@
     "icon_theme": {
         "dark": "Colored Zed Icons Theme Dark",
         "light": "Colored Zed Icons Theme Light",
-        "mode": "light"
+        "mode": "dark"
     },
     "ui_font_family": "Monaspace Radon",
     "ui_font_size": 14.0,
@@ -67,7 +67,7 @@
             "default_config_options": {
                 "mode": "agent",
                 "model": "gpt-5.6-sol",
-                "reasoning_effort": "high"
+                "reasoning_effort": "medium"
             },
             "type": "registry"
         },
@@ -111,6 +111,13 @@
         "mode": "eager",
         "provider": "copilot"
     },
+    "excerpt_context_lines": 6,
+    "expand_excerpt_lines": 10,
+    "file_finder": {
+        "file_icons": true,
+        "include_ignored": "indexed",
+        "modal_max_width": "full"
+    },
     "file_types": {
         "XML": [
             "wsdl",
@@ -129,6 +136,13 @@
         "dock": "right",
         "tree_view": false
     },
+    "gutter": {
+        "breakpoints": true,
+        "folds": false,
+        "line_numbers": true,
+        "min_line_number_digits": 5,
+        "runnables": false
+    },
     "hard_tabs": false,
     "hide_mouse": "never",
     "indent_guides": {
@@ -140,6 +154,7 @@
     },
     "inlay_hints": {
         "enabled": false,
+        "show_background": true,
         "show_type_hints": true
     },
     "language_models": {
@@ -334,15 +349,17 @@
     "outline_panel": {
         "dock": "right"
     },
-    "preferred_line_length": 100,
+    "preferred_line_length": 80,
     "preview_tabs": {
         "enable_preview_from_file_finder": false,
         "enabled": true
     },
     "project_panel": {
+        "bold_folder_labels": true,
         "dock": "right",
-        "entry_spacing": "comfortable",
-        "hide_root": false
+        "entry_spacing": "standard",
+        "hide_root": false,
+        "indent_size": 30
     },
     "restore_on_startup": "last_workspace",
     "rounded_selection": true,
@@ -362,7 +379,9 @@
     "tab_size": 4,
     "tabs": {
         "close_position": "right",
-        "git_status": true
+        "file_icons": true,
+        "git_status": true,
+        "show_diagnostics": "off"
     },
     "terminal": {
         "blinking": "on",
