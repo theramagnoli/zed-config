@@ -9,21 +9,21 @@
         "light": "Colored Zed Icons Theme Light",
         "mode": "dark"
     },
-    "ui_font_family": "Monaspace Radon",
-    "ui_font_size": 14.0,
+    "ui_font_family": ".ZedMono",
+    "ui_font_size": 13.0,
     "ui_font_weight": 400.0,
-    "buffer_font_family": "Monaspace Radon",
+    "buffer_font_family": ".ZedMono",
     "buffer_font_features": {
         "calt": true,
         "clig": true,
         "liga": true
     },
-    "buffer_font_size": 12,
+    "buffer_font_size": 11,
     "buffer_font_weight": 400.0,
     "buffer_line_height": {
         "custom": 2.2
     },
-    "agent_buffer_font_size": 12,
+    "agent_buffer_font_size": 11,
     "agent_ui_font_size": 14.5,
     "text_rendering_mode": "subpixel",
     "agent": {
@@ -392,13 +392,15 @@
     },
     "title_bar": {
         "show_menus": false,
+        "show_user_menu": true,
         "show_user_picture": true
     },
     "toolbar": {
         "agent_review": true,
-        "code_actions": false,
+        "breadcrumbs": true,
+        "code_actions": true,
         "quick_actions": false,
-        "selections_menu": false
+        "selections_menu": true
     },
     "unnecessary_code_fade": 0.3,
     "when_closing_with_no_tabs": "keep_window_open"
