@@ -379,7 +379,7 @@
     "tab_size": 4,
     "tabs": {
         "close_position": "right",
-        "file_icons": true,
+        "file_icons": false,
         "git_status": true,
         "show_diagnostics": "off"
     },
