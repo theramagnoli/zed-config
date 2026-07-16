@@ -9,38 +9,38 @@
         "light": "Colored Zed Icons Theme Light",
         "mode": "dark"
     },
-    "ui_font_family": ".ZedMono",
+    "ui_font_family": "Monaspace Radon",
     "ui_font_size": 13.0,
     "ui_font_weight": 400.0,
-    "buffer_font_family": ".ZedMono",
+    "buffer_font_family": "Monaspace Radon",
     "buffer_font_features": {
         "calt": true,
         "clig": true,
         "liga": true
     },
-    "buffer_font_size": 11,
+    "buffer_font_size": 11.5,
     "buffer_font_weight": 400.0,
     "buffer_line_height": {
-        "custom": 2.2
+        "custom": 2
     },
-    "agent_buffer_font_size": 11,
-    "agent_ui_font_size": 14.5,
-    "text_rendering_mode": "subpixel",
+    "agent_buffer_font_size": 11.5,
+    "agent_ui_font_size": 13,
+    "text_rendering_mode": "platform_default",
     "agent": {
         "auto_compact": {
-            "threshold": "80%"
+            "threshold": "70%"
         },
         "commit_message_instructions": "Usa el formato 'Se enunciado', por ejemplo: 'Se corrige error de validación en el formulario de registro', 'Se agrega funcionalidad de búsqueda avanzada', 'Se optimiza rendimiento de la carga de imágenes', 'Se actualiza documentación del proyecto', 'Se implementa autenticación de dos factores', 'Se corrige error de compatibilidad con navegadores antiguos', 'Se mejora experiencia de usuario en la interfaz de administración', 'Se agrega soporte para múltiples idiomas', 'Se refactoriza código para mejorar mantenibilidad', 'Se corrige error de seguridad en la gestión de sesiones', 'Se implementa sistema de notificaciones en tiempo real', etc.",
         "default_model": {
             "effort": "medium",
             "enable_thinking": true,
-            "model": "gpt-5.6-sol",
+            "model": "gpt-5.6-terra",
             "provider": "openai-subscribed"
         },
         "dock": "right",
         "favorite_models": [
             {
-                "effort": "medium",
+                "effort": "high",
                 "enable_thinking": true,
                 "model": "gpt-5.6-sol",
                 "provider": "openai-subscribed"
@@ -58,6 +58,13 @@
                 "provider": "deepseek"
             }
         ],
+        "sandbox_permissions": {
+            "network_hosts": [
+                "docs.pok.tech",
+                "api.pok.tech",
+                "help.pok.tech"
+            ]
+        },
         "tool_permissions": {
             "default": "allow"
         }
@@ -386,9 +393,7 @@
     "terminal": {
         "blinking": "on",
         "dock": "right",
-        "line_height": {
-            "custom": 1.4
-        }
+        "line_height": "standard"
     },
     "title_bar": {
         "show_menus": false,
