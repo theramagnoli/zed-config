@@ -1,13 +1,32 @@
 # Zed configuration
 
-This repository keeps a portable, non-secret Zed setup for macOS and a Windows machine used through WSL.
+This repository keeps a portable, non-secret Zed setup for three runtimes:
+
+| Runtime | Notes |
+| ------- | ----- |
+| macOS | Native Zed |
+| Windows via WSL | Sync from WSL into Windows-hosted Zed (`%APPDATA%/Zed`) |
+| Native Linux | e.g. Pop!_OS — native Zed under `~/.config/zed` |
+
+## Prerequisites
+
+- Git, `python3`, and a Zed install on the target machine
+- **Monaspace Radon** installed as a system font (UI and buffer font)
+- On WSL → Windows Zed: `powershell.exe` and `wslpath` available in the distro
+
+Theme and icon extensions referenced by the shared settings are declared in `auto_install_extensions`, so Zed installs them on first launch:
+
+- `macos-classic` (macOS Classic Light/Dark themes)
+- `colored-zed-icons-theme`
+- `html`
 
 ## Install the command
 
-Install the CLI and completions for Bash, Zsh, and Fish:
+Clone this repository to a permanent location (the installed command is a symlink into the checkout), then:
 
 ```sh
 ./sync-zed.sh install
+zed-config pull
 ```
 
 This creates `~/.local/bin/zed-config` as a symlink to this checkout. Ensure `~/.local/bin` is in `PATH`, then restart your shell and use the command from anywhere:
@@ -17,7 +36,7 @@ zed-config status
 zed-config push
 ```
 
-The installer writes completion definitions to the standard user directories for all three shells. Zsh users whose configuration does not already include `~/.zfunc` should add this before their `compinit` call:
+The installer writes completion definitions to the standard user directories for Bash, Zsh, and Fish. Zsh users whose configuration does not already include `~/.zfunc` should add this before their `compinit` call:
 
 ```zsh
 fpath=(~/.zfunc $fpath)
@@ -30,7 +49,7 @@ Because the installed command points to this checkout, keep the repository in pl
 
 ## Sync it
 
-For the usual two-machine workflow, keep both checkouts on `main`. After changing Zed settings on one machine:
+Keep every checkout on `main`. After changing Zed settings on one machine:
 
 ```sh
 zed-config push
@@ -38,7 +57,7 @@ zed-config push
 
 This captures the safe configuration bundle, creates a timestamped commit such as `Copia 14/04/2026 7:30 AM`, adds an automatic description of the changed settings and synced files, and pushes `main` to `origin`.
 
-On the other computer:
+On another computer:
 
 ```sh
 zed-config pull
@@ -56,9 +75,9 @@ This requires a clean `main` checkout, fast-forwards from `origin/main`, backs u
 | ------------------------ | ----------------------- | ------------- |
 | macOS                    | `~/.config/zed`         | `cmd`         |
 | WSL (Windows-hosted Zed) | Windows `%APPDATA%/Zed` | `ctrl`        |
-| Linux                    | `~/.config/zed`         | `ctrl`        |
+| Linux (native Zed)       | `~/.config/zed`         | `ctrl`        |
 
-Zed uses `alt` for the macOS Option key as well as the Windows Alt key, so `alt` bindings remain unchanged. The script recognizes WSL and uses `powershell.exe` plus `wslpath` to write to the Windows Zed configuration—not a separate WSL-only config directory.
+Zed uses `alt` for the macOS Option key as well as the Windows/Linux Alt key, so `alt` bindings remain unchanged. The script recognizes WSL and uses `powershell.exe` plus `wslpath` to write to the Windows Zed configuration—not a separate WSL-only config directory.
 
 If you run a Linux build of Zed **inside** WSL rather than Windows-hosted Zed, override the destination explicitly:
 
@@ -70,9 +89,17 @@ ZED_CONFIG_DIR="$HOME/.config/zed" ./sync-zed.sh pull
 
 ## Platform-specific settings
 
-`settings.json` contains the shared configuration. Its nested objects are written alphabetically whenever the configuration is captured; the top-level appearance and font settings stay together at the beginning, followed by the remaining settings alphabetically. Files under `config/platform/` are overlays whose top-level keys remain specific to that platform.
+`settings.json` contains the shared configuration. Its nested objects are written alphabetically whenever the configuration is captured; the top-level appearance and font settings stay together at the beginning, followed by the remaining settings alphabetically. Files under `config/platform/` are overlays whose top-level keys remain specific to that platform:
 
-The Windows overlay owns `wsl_connections`. During `pull`, the script merges those connections into the shared settings before writing `%APPDATA%/Zed/settings.json`. During a Windows/WSL `push`, it extracts the same key back into the overlay, so a later Mac update cannot erase the saved WSL projects.
+| Overlay | Used on | Typical keys |
+| ------- | ------- | ------------ |
+| `config/platform/windows.json` | Windows / WSL | `wsl_connections` |
+| `config/platform/macos.json` | macOS | optional Mac-only keys |
+| `config/platform/linux.json` | native Linux | optional Linux-only keys |
+
+The Windows overlay owns `wsl_connections`. During `pull`, the script merges those connections into the shared settings before writing `%APPDATA%/Zed/settings.json`. During a Windows/WSL `push`, it extracts the same key back into the overlay, so a later Mac or Linux update cannot erase the saved WSL projects.
+
+Missing overlay files are fine: the shared `settings.json` is applied as-is.
 
 JSON processing requires `python3`. The helper accepts Zed's JSON-with-comments and trailing commas as input, then writes strict JSON without comments or trailing commas for settings, keymaps, tasks, debug definitions, themes, and snippets.
 
@@ -87,4 +114,4 @@ JSON processing requires `python3`. The helper accepts Zed's JSON-with-comments 
 
 `pull` creates timestamped backups of those destination files first.
 
-The script intentionally excludes Zed databases, prompt-library data, extensions and extension state, logs, caches, sessions, lockfiles, local backups, and authentication data. Provider keys are stored in the OS keychain rather than `settings.json`, but external-agent credentials can have their own storage and are not copied.
+The script intentionally excludes Zed databases, prompt-library data, extensions and extension state, logs, caches, sessions, lockfiles, local backups, and authentication data. Provider keys are stored in the OS keychain rather than `settings.json`, but external-agent credentials can have their own storage and are not copied. Extensions themselves are reinstalled via `auto_install_extensions` rather than copied between machines.
