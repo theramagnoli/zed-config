@@ -417,14 +417,6 @@
             "breadcrumbs": false
         }
     },
-    "theme_overrides": {
-        "macOS Classic Dark": {
-            "terminal.background": "#171717"
-        },
-        "macOS Classic Light": {
-            "terminal.background": "#171717"
-        }
-    },
     "title_bar": {
         "show_menus": false,
         "show_user_menu": true,
