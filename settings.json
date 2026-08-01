@@ -409,7 +409,21 @@
     "terminal": {
         "blinking": "on",
         "dock": "right",
-        "line_height": "standard"
+        "line_height": "standard",
+        "scrollbar": {
+            "show": "never"
+        },
+        "toolbar": {
+            "breadcrumbs": false
+        }
+    },
+    "theme_overrides": {
+        "macOS Classic Dark": {
+            "terminal.background": "#171717"
+        },
+        "macOS Classic Light": {
+            "terminal.background": "#171717"
+        }
     },
     "title_bar": {
         "show_menus": false,
@@ -424,5 +438,6 @@
         "selections_menu": true
     },
     "unnecessary_code_fade": 0.3,
-    "when_closing_with_no_tabs": "keep_window_open"
+    "when_closing_with_no_tabs": "keep_window_open",
+    "zoomed_padding": false
 }
