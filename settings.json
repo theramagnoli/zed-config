@@ -2,12 +2,12 @@
     "theme": {
         "dark": "macOS Classic Dark",
         "light": "macOS Classic Light",
-        "mode": "light"
+        "mode": "dark"
     },
     "icon_theme": {
         "dark": "Colored Zed Icons Theme Dark",
         "light": "Colored Zed Icons Theme Light",
-        "mode": "dark"
+        "mode": "light"
     },
     "ui_font_family": "Monaspace Radon",
     "ui_font_size": 13.0,
@@ -18,30 +18,30 @@
         "clig": true,
         "liga": true
     },
-    "buffer_font_size": 11.5,
+    "buffer_font_size": 12.25,
     "buffer_font_weight": 400.0,
     "buffer_line_height": {
         "custom": 2
     },
-    "agent_buffer_font_size": 11.5,
-    "agent_ui_font_size": 13,
+    "agent_buffer_font_size": 12.25,
+    "agent_ui_font_size": 14,
     "text_rendering_mode": "platform_default",
     "agent": {
         "auto_compact": {
-            "threshold": "70%"
+            "threshold": "80%"
         },
         "commit_message_instructions": "Genera un único mensaje de commit en español a partir de los cambios realizados.\n\nPrimero identifica la intención principal del cambio, no te limites a enumerar archivos, funciones o líneas modificadas. El mensaje debe explicar qué comportamiento, funcionalidad o estructura se agregó, corrigió, modificó o eliminó.\n\nASUNTO OBLIGATORIO\n- Debe comenzar exactamente con: Se\n- Formato: Se + verbo en tercera persona del singular + actividad concreta\n- Usa verbos como: agrega, implementa, corrige, modifica, actualiza, elimina, refactoriza, ajusta, integra, reemplaza o configura\n- Usa presente indicativo; no uses infinitivos ni participios\n- Describe el resultado o propósito del cambio, no solamente la acción técnica realizada\n- Prioriza el cambio funcional más importante cuando existan varios cambios relacionados\n- Longitud recomendada: entre 40 y 90 caracteres\n- No uses punto final\n- No uses prefijos como feat:, fix:, refactor: o chore:\n- No menciones nombres de archivos salvo que sean indispensables para entender el cambio\n- No uses asuntos genéricos como:\n  - Se realizan cambios\n  - Se actualizan archivos\n  - Se corrigen errores\n  - Se hacen ajustes\n  - Se modifica código\n\nCUERPO OPCIONAL\nIncluye un cuerpo únicamente cuando ocurra al menos una de estas condiciones:\n- Existen dos o más cambios relevantes que no caben claramente en el asunto\n- Es necesario explicar una decisión técnica importante\n- El cambio afecta distintas capas, módulos o comportamientos\n- Hay una consecuencia relevante que no resulta evidente en el asunto\n\nReglas para el cuerpo:\n- Separa el asunto y el cuerpo con una línea en blanco\n- Usa una lista con guiones\n- Incluye como máximo 4 puntos\n- Cada punto debe describir un cambio concreto o su propósito\n- No repitas ni reformules el asunto\n- No enumeres cambios irrelevantes, formateos o detalles internos menores\n\nCRITERIOS DE REDACCIÓN\n- El mensaje completo debe estar en español\n- Se permiten términos técnicos comunes en inglés, como endpoint, middleware, snapshot, join, payload, hook o cache\n- Conserva nombres propios de clases, métodos, endpoints, tablas y tecnologías cuando sean necesarios\n- Evita explicar cómo se modificó cada línea; resume qué se consiguió con el cambio\n- No inventes funcionalidades, causas ni resultados que no puedan deducirse de los cambios\n- Si los cambios son principalmente una corrección, usa corrige o ajusta e indica exactamente qué comportamiento se solucionó\n- Si los cambios reorganizan código sin alterar comportamiento, usa refactoriza\n- Si los cambios incluyen funcionalidad y refactorización, prioriza la funcionalidad en el asunto y menciona la refactorización en el cuerpo solo si es relevante\n\nEJEMPLOS CORRECTOS\nSe agrega envío de metadatos a POK\n\nSe corrige validación de fechas en reservaciones de lockers\n\nSe integra autorización por grupos para crear secciones\n\nSe actualiza cálculo del estado de los registros de lockers\n\nSe agrega búsqueda de usuarios por nombre y matrícula\n\n- Se normaliza el texto mediante unaccent\n- Se conserva el ordenamiento por coincidencia\n\nEJEMPLOS INCORRECTOS\nSe realizan varios cambios\nSe modifican archivos del controlador\nSe actualiza código y se corrigen errores\nAgregar validación de usuarios\nCambios en lockers\nfix: se corrige formulario\n\nSALIDA\nDevuelve exclusivamente el mensaje final del commit.\nNo incluyas explicaciones, encabezados, comillas, bloques de código, metacomentarios ni el diff original.",
         "commit_message_model": {
-            "effort": "medium",
+            "effort": "low",
             "enable_thinking": false,
-            "model": "gpt-5.6-terra",
-            "provider": "openai-subscribed"
+            "model": "deepseek-v4-flash",
+            "provider": "deepseek"
         },
         "default_model": {
-            "effort": "medium",
+            "effort": "high",
             "enable_thinking": true,
-            "model": "gpt-5.6-sol",
-            "provider": "openai-subscribed"
+            "model": "deepseek-v4-pro",
+            "provider": "deepseek"
         },
         "dock": "right",
         "favorite_models": [
@@ -102,7 +102,8 @@
     "auto_install_extensions": {
         "colored-zed-icons-theme": true,
         "html": true,
-        "macos-classic": true
+        "macos-classic": true,
+        "tsgo": true
     },
     "centered_layout": {
         "left_padding": 0.165,
@@ -200,6 +201,14 @@
                 ]
             }
         },
+        "JavaScript": {
+            "language_servers": [
+                "typescript-ls",
+                "!vtsls",
+                "!typescript-language-server",
+                "..."
+            ]
+        },
         "Markdown": {
             "show_edit_predictions": true
         },
@@ -225,15 +234,31 @@
                 "..."
             ]
         },
+        "TSX": {
+            "language_servers": [
+                "typescript-ls",
+                "!vtsls",
+                "!typescript-language-server",
+                "..."
+            ]
+        },
         "TypeScript": {
+            "language_servers": [
+                "typescript-ls",
+                "!vtsls",
+                "!typescript-language-server",
+                "..."
+            ],
             "show_edit_predictions": true,
             "tab_size": 4
         },
         "Vue.js": {
             "language_servers": [
-                "vtsls",
                 "vue-language-server",
-                "tailwindcss-language-server"
+                "vtsls",
+                "tailwindcss-language-server",
+                "!typescript-language-server",
+                "!typescript-ls"
             ]
         },
         "XML": {
@@ -243,105 +268,118 @@
                     "@prettier/plugin-xml"
                 ]
             }
-        },
-        "lsp": {
-            "pylsp": {
-                "settings": {
-                    "plugins": {
-                        "autopep8": {
-                            "enabled": false
-                        },
-                        "black": {
-                            "enabled": false
-                        },
-                        "flake8": {
-                            "enabled": false
-                        },
-                        "isort": {
-                            "enabled": false
-                        },
-                        "jedi": {
-                            "enabled": true
-                        },
-                        "mccabe": {
-                            "enabled": false
-                        },
-                        "pycodestyle": {
-                            "enabled": false
-                        },
-                        "pydocstyle": {
-                            "enabled": false
-                        },
-                        "pyflakes": {
-                            "enabled": false
-                        },
-                        "pylint": {
-                            "enabled": false
-                        },
-                        "pylsp_mypy": {
-                            "enabled": true
-                        },
-                        "rope": {
-                            "enabled": true
-                        },
-                        "rope_autoimport": {
-                            "enabled": true
-                        },
-                        "rope_completion": {
-                            "enabled": true
-                        },
-                        "ruff": {
-                            "enabled": false
-                        },
-                        "yapf": {
-                            "enabled": false
-                        }
-                    }
-                }
-            },
-            "ruff": {
-                "initialization_options": {
-                    "settings": {
-                        "codeAction": {
-                            "disableRuleComment": {
-                                "enable": false
-                            },
-                            "fixViolation": {
-                                "enable": true
-                            }
-                        },
-                        "configuration": {
-                            "format": {
-                                "quote-style": "double",
-                                "skip-magic-trailing-comma": false
-                            }
-                        },
-                        "configurationPreference": "filesystemFirst",
-                        "fixAll": true,
-                        "format": {
-                            "preview": true
-                        },
-                        "lineLength": 100,
-                        "lint": {
-                            "enable": true,
-                            "extendSelect": [
-                                "I"
-                            ],
-                            "select": [
-                                "E4",
-                                "E7",
-                                "E9",
-                                "F"
-                            ]
-                        },
-                        "organizeImports": true,
-                        "showSyntaxErrors": true
-                    }
-                }
-            }
         }
     },
     "lsp": {
+        "pylsp": {
+            "settings": {
+                "plugins": {
+                    "autopep8": {
+                        "enabled": false
+                    },
+                    "black": {
+                        "enabled": false
+                    },
+                    "flake8": {
+                        "enabled": false
+                    },
+                    "isort": {
+                        "enabled": false
+                    },
+                    "jedi": {
+                        "enabled": true
+                    },
+                    "mccabe": {
+                        "enabled": false
+                    },
+                    "pycodestyle": {
+                        "enabled": false
+                    },
+                    "pydocstyle": {
+                        "enabled": false
+                    },
+                    "pyflakes": {
+                        "enabled": false
+                    },
+                    "pylint": {
+                        "enabled": false
+                    },
+                    "pylsp_mypy": {
+                        "enabled": true
+                    },
+                    "rope": {
+                        "enabled": true
+                    },
+                    "rope_autoimport": {
+                        "enabled": true
+                    },
+                    "rope_completion": {
+                        "enabled": true
+                    },
+                    "ruff": {
+                        "enabled": false
+                    },
+                    "yapf": {
+                        "enabled": false
+                    }
+                }
+            }
+        },
+        "ruff": {
+            "initialization_options": {
+                "settings": {
+                    "codeAction": {
+                        "disableRuleComment": {
+                            "enable": false
+                        },
+                        "fixViolation": {
+                            "enable": true
+                        }
+                    },
+                    "configuration": {
+                        "format": {
+                            "quote-style": "double",
+                            "skip-magic-trailing-comma": false
+                        }
+                    },
+                    "configurationPreference": "filesystemFirst",
+                    "fixAll": true,
+                    "format": {
+                        "preview": true
+                    },
+                    "lineLength": 100,
+                    "lint": {
+                        "enable": true,
+                        "extendSelect": [
+                            "I"
+                        ],
+                        "select": [
+                            "E4",
+                            "E7",
+                            "E9",
+                            "F"
+                        ]
+                    },
+                    "organizeImports": true,
+                    "showSyntaxErrors": true
+                }
+            }
+        },
+        "tailwindcss-language-server": {
+            "settings": {
+                "experimental": {
+                    "classRegex": [
+                        "class=\"([^\"]*)\"",
+                        "class='([^']*)'",
+                        ":class=\"([^\"]*)\"",
+                        ":class='([^']*)'"
+                    ]
+                },
+                "includeLanguages": {
+                    "vue": "html"
+                }
+            }
+        },
         "vscode-css-language-server": {
             "settings": {
                 "css": {
@@ -360,9 +398,17 @@
                     }
                 },
                 "typescript": {
+                    "tsdk": "node_modules/typescript/lib",
                     "updateImportsOnFileMove": {
                         "enabled": "always"
                     }
+                }
+            }
+        },
+        "vue": {
+            "initialization_options": {
+                "typescript": {
+                    "tsdk": "node_modules/typescript/lib"
                 }
             }
         }
