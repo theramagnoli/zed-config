@@ -1,16 +1,16 @@
 {
     "theme": {
-        "dark": "macOS Classic Dark",
+        "dark": "New Darcula Darker",
         "light": "macOS Classic Light",
         "mode": "dark"
     },
     "icon_theme": {
         "dark": "Colored Zed Icons Theme Dark",
         "light": "Colored Zed Icons Theme Light",
-        "mode": "light"
+        "mode": "dark"
     },
     "ui_font_family": "Monaspace Radon",
-    "ui_font_size": 13.0,
+    "ui_font_size": 14.0,
     "ui_font_weight": 400.0,
     "buffer_font_family": "Monaspace Radon",
     "buffer_font_features": {
@@ -18,12 +18,12 @@
         "clig": true,
         "liga": true
     },
-    "buffer_font_size": 12.25,
+    "buffer_font_size": 13.0,
     "buffer_font_weight": 400.0,
     "buffer_line_height": {
         "custom": 2
     },
-    "agent_buffer_font_size": 12.25,
+    "agent_buffer_font_size": 13.0,
     "agent_ui_font_size": 14,
     "text_rendering_mode": "platform_default",
     "agent": {
