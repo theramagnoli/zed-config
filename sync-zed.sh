@@ -19,8 +19,10 @@ REPO_DIR=$(CDPATH= cd -- "$(dirname -- "$SCRIPT_PATH")" && pwd)
 SETTINGS_FILE="$REPO_DIR/settings.json"
 KEYMAP_TEMPLATE="$REPO_DIR/keymap.json.tmpl"
 EXTRAS_DIR="$REPO_DIR/config"
+SKILLS_REPO_DIR="$EXTRAS_DIR/skills"
 SETTINGS_TOOL="$REPO_DIR/scripts/sync-settings.py"
 CONFIG_DIR_OVERRIDE=${ZED_CONFIG_DIR:-}
+SKILLS_DIR_OVERRIDE=${ZED_SKILLS_DIR:-}
 
 die() {
     printf '%s\n' "error: $*" >&2
@@ -62,6 +64,9 @@ detect_target() {
         ZED_CONFIG_DIR=$CONFIG_DIR_OVERRIDE
         ZED_DEBUG_FILE="$ZED_CONFIG_DIR/debug.json"
     fi
+
+    # Global agent skills live outside the Zed config directory.
+    SKILLS_DIR=${SKILLS_DIR_OVERRIDE:-$HOME/.agents/skills}
 }
 
 require_settings_tool() {
@@ -160,6 +165,7 @@ backup_safe_files() {
     backup_if_present "$ZED_DEBUG_FILE"
     backup_if_present "$ZED_CONFIG_DIR/themes"
     backup_if_present "$ZED_CONFIG_DIR/snippets"
+    backup_if_present "$SKILLS_DIR"
 }
 
 pull() {
@@ -174,7 +180,9 @@ pull() {
     mirror_optional_json_file "$EXTRAS_DIR/debug.json" "$ZED_DEBUG_FILE"
     mirror_optional_dir "$EXTRAS_DIR/themes" "$ZED_CONFIG_DIR/themes"
     mirror_optional_dir "$EXTRAS_DIR/snippets" "$ZED_CONFIG_DIR/snippets"
+    mirror_optional_dir "$SKILLS_REPO_DIR" "$SKILLS_DIR"
     printf 'Applied %s configuration to %s\n' "$PLATFORM" "$ZED_CONFIG_DIR"
+    printf 'Synced agent skills to %s\n' "$SKILLS_DIR"
 }
 
 push() {
@@ -202,12 +210,27 @@ push() {
     mirror_optional_json_file "$ZED_DEBUG_FILE" "$EXTRAS_DIR/debug.json"
     mirror_optional_dir "$ZED_CONFIG_DIR/themes" "$EXTRAS_DIR/themes"
     mirror_optional_dir "$ZED_CONFIG_DIR/snippets" "$EXTRAS_DIR/snippets"
+    mirror_optional_dir "$SKILLS_DIR" "$SKILLS_REPO_DIR"
     printf 'Captured %s configuration into %s\n' "$PLATFORM" "$REPO_DIR"
+    printf 'Captured agent skills from %s\n' "$SKILLS_DIR"
     printf 'Review the diff, then commit and push it with Git.\n'
 }
 
+dirs_match() {
+    left=$1
+    right=$2
+    if [ ! -d "$left" ] && [ ! -d "$right" ]; then
+        return 0
+    fi
+    if [ ! -d "$left" ] || [ ! -d "$right" ]; then
+        return 1
+    fi
+    diff -rq "$left" "$right" >/dev/null 2>&1
+}
+
 status() {
-    printf 'Platform: %s\nZed config: %s\nPrimary modifier: %s\n' "$PLATFORM" "$ZED_CONFIG_DIR" "$PRIMARY"
+    printf 'Platform: %s\nZed config: %s\nPrimary modifier: %s\nSkills: %s\n' \
+        "$PLATFORM" "$ZED_CONFIG_DIR" "$PRIMARY" "$SKILLS_DIR"
     settings_temp=$(mktemp)
     keymap_temp=$(mktemp)
     trap 'rm -f "$settings_temp" "$keymap_temp"' EXIT HUP INT TERM
@@ -217,6 +240,11 @@ status() {
     render_keymap "$keymap_temp"
     [ -f "$ZED_CONFIG_DIR/keymap.json" ] && diff -q "$keymap_temp" "$ZED_CONFIG_DIR/keymap.json" >/dev/null \
         && printf 'keymap: in sync\n' || printf 'keymap: differ or missing\n'
+    if dirs_match "$SKILLS_REPO_DIR" "$SKILLS_DIR"; then
+        printf 'skills: in sync\n'
+    else
+        printf 'skills: differ or missing\n'
+    fi
 }
 
 require_main_checkout() {
@@ -386,8 +414,9 @@ Usage: zed-config <command>
   completion   Print completion code: completion <bash|zsh|fish>.
 
 The bundle includes settings, keymap, AGENTS.md, global tasks/debug definitions,
-local themes, and snippets. It intentionally excludes authentication, databases,
-extensions, prompt-library data, logs, caches, and backups.
+local themes, snippets, and agent skills (~/.agents/skills). It intentionally
+excludes authentication, databases, extensions, prompt-library data, logs,
+caches, and backups.
 
 Run `push` after deliberately changing Zed configuration on either computer.
 Run `pull` on the other computer.

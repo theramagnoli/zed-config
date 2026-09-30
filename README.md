@@ -111,7 +111,10 @@ JSON processing requires `python3`. The helper accepts Zed's JSON-with-comments 
 - `AGENTS.md` (global agent instructions)
 - global `tasks.json` and `debug.json`, when present
 - local `themes/` and `snippets/` directories
+- global agent skills from `~/.agents/skills` (stored in the repo as `config/skills/`)
 
-`pull` creates timestamped backups of those destination files first.
+`pull` creates timestamped backups of those destination files first, including the skills directory.
+
+Skills live outside Zed's config directory. Override the local path with `ZED_SKILLS_DIR` when needed (default: `$HOME/.agents/skills`). On `push`, the local skills tree is captured into `config/skills/`; on `pull`, that tree is applied back to the local skills directory.
 
 The script intentionally excludes Zed databases, prompt-library data, extensions and extension state, logs, caches, sessions, lockfiles, local backups, and authentication data. Provider keys are stored in the OS keychain rather than `settings.json`, but external-agent credentials can have their own storage and are not copied. Extensions themselves are reinstalled via `auto_install_extensions` rather than copied between machines.
