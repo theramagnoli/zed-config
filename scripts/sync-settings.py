@@ -142,9 +142,7 @@ def write_json(
     sort_keys: bool = False,
 ) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    descriptor, temporary_name = tempfile.mkstemp(
-        prefix=f".{path.name}.", dir=path.parent
-    )
+    descriptor, temporary_name = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
     try:
         with os.fdopen(descriptor, "w", encoding="utf-8") as temporary_file:
             json.dump(
@@ -208,6 +206,100 @@ def capture(local_path: Path, base_path: Path, overlay_path: Path) -> None:
     write_json(overlay_path, captured_overlay, sort_keys=True)
 
 
+def installed_extension_ids(extensions_dir: Path) -> list[str]:
+    """Return non-dev extension IDs currently installed on this machine."""
+    ids: set[str] = set()
+    index_path = extensions_dir / "index.json"
+    if index_path.is_file():
+        try:
+            index = load_jsonc(index_path)
+        except (OSError, ValueError, json.JSONDecodeError):
+            index = {}
+        if isinstance(index, dict):
+            extensions = index.get("extensions", {})
+            if isinstance(extensions, dict):
+                for extension_id, info in extensions.items():
+                    if not isinstance(extension_id, str):
+                        continue
+                    if isinstance(info, dict) and info.get("dev"):
+                        continue
+                    ids.add(extension_id)
+
+    installed_dir = extensions_dir / "installed"
+    if installed_dir.is_dir():
+        for entry in installed_dir.iterdir():
+            if entry.is_dir() and not entry.name.startswith("."):
+                ids.add(entry.name)
+
+    return sorted(ids)
+
+
+def desired_auto_install_extensions(
+    settings: dict[str, Any], installed_ids: list[str]
+) -> dict[str, bool]:
+    """Merge installed extensions into auto_install_extensions."""
+    existing = settings.get("auto_install_extensions")
+    desired: dict[str, bool] = {}
+    if isinstance(existing, dict):
+        for key, value in existing.items():
+            if not isinstance(key, str):
+                continue
+            # Preserve explicit opt-outs (false) even if the extension is absent.
+            desired[key] = bool(value)
+
+    for extension_id in installed_ids:
+        desired[extension_id] = True
+
+    return {key: desired[key] for key in sorted(desired)}
+
+
+def capture_extensions(settings_path: Path, extensions_dir: Path) -> list[str]:
+    """Update settings.json auto_install_extensions from the local install set."""
+    settings = load_jsonc_object(settings_path)
+    installed_ids = installed_extension_ids(extensions_dir)
+    desired = desired_auto_install_extensions(settings, installed_ids)
+    previous = settings.get("auto_install_extensions")
+    previous_map = previous if isinstance(previous, dict) else {}
+    settings["auto_install_extensions"] = desired
+    write_json(settings_path, settings, SETTINGS_PRIORITY, sort_keys=True)
+
+    added = [ext for ext in desired if ext not in previous_map and desired[ext]]
+    enabled = [ext for ext in desired if previous_map.get(ext) is False and desired[ext] is True]
+    return sorted(set(added) | set(enabled))
+
+
+def extensions_status(settings_path: Path, extensions_dir: Path) -> str:
+    """Compare declared auto_install_extensions with installed extensions."""
+    settings = load_jsonc_object(settings_path)
+    declared_raw = settings.get("auto_install_extensions")
+    declared: dict[str, bool] = {}
+    if isinstance(declared_raw, dict):
+        declared = {key: bool(value) for key, value in declared_raw.items() if isinstance(key, str)}
+
+    wanted = sorted(ext for ext, enabled in declared.items() if enabled)
+    blocked = sorted(ext for ext, enabled in declared.items() if not enabled)
+    installed = set(installed_extension_ids(extensions_dir))
+
+    missing = [ext for ext in wanted if ext not in installed]
+    extra = sorted(ext for ext in installed if ext not in declared or not declared.get(ext))
+
+    lines = [
+        f"extensions declared: {len(wanted)}",
+        f"extensions installed: {len(installed)}",
+    ]
+    if missing:
+        lines.append("extensions missing locally: " + ", ".join(missing))
+    if extra:
+        lines.append("extensions not declared: " + ", ".join(extra))
+    if blocked:
+        lines.append("extensions blocked (false): " + ", ".join(blocked))
+    if not missing and not extra:
+        lines.append("extensions: in sync")
+    else:
+        lines.append("extensions: differ")
+    return "\n".join(lines)
+
+
 def staged_file_statuses(repository: Path) -> list[tuple[str, str]]:
     """Return staged paths and their Git status, including rename destinations."""
     result = subprocess.run(
@@ -254,11 +346,7 @@ def load_jsonc_text(text: str) -> Any:
 def settings_change_summary(repository: Path) -> str | None:
     before = staged_json(repository, "HEAD", "settings.json")
     after = staged_json(repository, ":", "settings.json")
-    changes = [
-        key
-        for key in sorted(set(before) | set(after))
-        if before.get(key) != after.get(key)
-    ]
+    changes = [key for key in sorted(set(before) | set(after)) if before.get(key) != after.get(key)]
     if not changes:
         return None
     return "settings.json: " + ", ".join(changes)
@@ -303,6 +391,14 @@ def main() -> None:
     summary_parser = subparsers.add_parser("staged-summary")
     summary_parser.add_argument("repository", type=Path)
 
+    capture_extensions_parser = subparsers.add_parser("capture-extensions")
+    capture_extensions_parser.add_argument("settings", type=Path)
+    capture_extensions_parser.add_argument("extensions_dir", type=Path)
+
+    extensions_status_parser = subparsers.add_parser("extensions-status")
+    extensions_status_parser.add_argument("settings", type=Path)
+    extensions_status_parser.add_argument("extensions_dir", type=Path)
+
     arguments = parser.parse_args()
     if arguments.command == "normalize":
         normalize(arguments.input, arguments.output)
@@ -310,6 +406,14 @@ def main() -> None:
         render(arguments.base, arguments.overlay, arguments.output)
     elif arguments.command == "capture":
         capture(arguments.local, arguments.base, arguments.overlay)
+    elif arguments.command == "capture-extensions":
+        added = capture_extensions(arguments.settings, arguments.extensions_dir)
+        if added:
+            print("Captured extensions: " + ", ".join(added))
+        else:
+            print("Extensions already captured in settings.json")
+    elif arguments.command == "extensions-status":
+        print(extensions_status(arguments.settings, arguments.extensions_dir))
     else:
         print(staged_summary(arguments.repository))
 

@@ -23,6 +23,7 @@ SKILLS_REPO_DIR="$EXTRAS_DIR/skills"
 SETTINGS_TOOL="$REPO_DIR/scripts/sync-settings.py"
 CONFIG_DIR_OVERRIDE=${ZED_CONFIG_DIR:-}
 SKILLS_DIR_OVERRIDE=${ZED_SKILLS_DIR:-}
+EXTENSIONS_DIR_OVERRIDE=${ZED_EXTENSIONS_DIR:-}
 
 die() {
     printf '%s\n' "error: $*" >&2
@@ -34,7 +35,9 @@ detect_target() {
         PLATFORM=macos
         PRIMARY=cmd
         ZED_CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/zed"
-        ZED_DEBUG_FILE="$HOME/Library/Application Support/Zed/debug.json"
+        ZED_DATA_DIR="$HOME/Library/Application Support/Zed"
+        ZED_DEBUG_FILE="$ZED_DATA_DIR/debug.json"
+        ZED_EXTENSIONS_DIR="$ZED_DATA_DIR/extensions"
         SETTINGS_OVERLAY="$EXTRAS_DIR/platform/macos.json"
     elif [ -n "${WSL_DISTRO_NAME:-}" ] || grep -qiE '(microsoft|wsl)' /proc/version 2>/dev/null; then
         PLATFORM=wsl
@@ -44,25 +47,53 @@ detect_target() {
         win_appdata=$(powershell.exe -NoProfile -Command '[Environment]::GetFolderPath("ApplicationData")' | tr -d '\r')
         [ -n "$win_appdata" ] || die "could not determine Windows %APPDATA%"
         ZED_CONFIG_DIR="$(wslpath -u "$win_appdata")/Zed"
+        win_local=$(powershell.exe -NoProfile -Command '[Environment]::GetFolderPath("LocalApplicationData")' | tr -d '\r')
+        if [ -n "$win_local" ]; then
+            ZED_DATA_DIR="$(wslpath -u "$win_local")/Zed"
+        else
+            ZED_DATA_DIR=$ZED_CONFIG_DIR
+        fi
         ZED_DEBUG_FILE="$ZED_CONFIG_DIR/debug.json"
+        # Windows-hosted Zed keeps extensions under LocalAppData; fall back to config.
+        if [ -d "$ZED_DATA_DIR/extensions" ]; then
+            ZED_EXTENSIONS_DIR="$ZED_DATA_DIR/extensions"
+        else
+            ZED_EXTENSIONS_DIR="$ZED_CONFIG_DIR/extensions"
+        fi
         SETTINGS_OVERLAY="$EXTRAS_DIR/platform/windows.json"
     elif [ -n "${APPDATA:-}" ] && uname -s | grep -qE '^(MINGW|MSYS|CYGWIN)'; then
         PLATFORM=windows
         PRIMARY=ctrl
         ZED_CONFIG_DIR="$APPDATA/Zed"
+        if [ -n "${LOCALAPPDATA:-}" ]; then
+            ZED_DATA_DIR="$LOCALAPPDATA/Zed"
+        else
+            ZED_DATA_DIR=$ZED_CONFIG_DIR
+        fi
         ZED_DEBUG_FILE="$ZED_CONFIG_DIR/debug.json"
+        if [ -d "$ZED_DATA_DIR/extensions" ]; then
+            ZED_EXTENSIONS_DIR="$ZED_DATA_DIR/extensions"
+        else
+            ZED_EXTENSIONS_DIR="$ZED_CONFIG_DIR/extensions"
+        fi
         SETTINGS_OVERLAY="$EXTRAS_DIR/platform/windows.json"
     else
         PLATFORM=linux
         PRIMARY=ctrl
         ZED_CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/zed"
+        ZED_DATA_DIR="${XDG_DATA_HOME:-$HOME/.local/share}/zed"
         ZED_DEBUG_FILE="$ZED_CONFIG_DIR/debug.json"
+        ZED_EXTENSIONS_DIR="$ZED_DATA_DIR/extensions"
         SETTINGS_OVERLAY="$EXTRAS_DIR/platform/linux.json"
     fi
 
     if [ -n "$CONFIG_DIR_OVERRIDE" ]; then
         ZED_CONFIG_DIR=$CONFIG_DIR_OVERRIDE
         ZED_DEBUG_FILE="$ZED_CONFIG_DIR/debug.json"
+    fi
+
+    if [ -n "$EXTENSIONS_DIR_OVERRIDE" ]; then
+        ZED_EXTENSIONS_DIR=$EXTENSIONS_DIR_OVERRIDE
     fi
 
     # Global agent skills live outside the Zed config directory.
@@ -109,6 +140,11 @@ capture_settings() {
     else
         python3 "$SETTINGS_TOOL" normalize "$source_file" "$SETTINGS_FILE"
     fi
+}
+
+capture_extensions() {
+    require_settings_tool
+    python3 "$SETTINGS_TOOL" capture-extensions "$SETTINGS_FILE" "$ZED_EXTENSIONS_DIR"
 }
 
 backup_if_present() {
@@ -183,12 +219,14 @@ pull() {
     mirror_optional_dir "$SKILLS_REPO_DIR" "$SKILLS_DIR"
     printf 'Applied %s configuration to %s\n' "$PLATFORM" "$ZED_CONFIG_DIR"
     printf 'Synced agent skills to %s\n' "$SKILLS_DIR"
+    printf 'Extensions will install via auto_install_extensions on next Zed launch\n'
 }
 
 push() {
     [ -f "$ZED_CONFIG_DIR/settings.json" ] || die "Zed settings not found: $ZED_CONFIG_DIR/settings.json"
     [ -f "$ZED_CONFIG_DIR/keymap.json" ] || die "Zed keymap not found: $ZED_CONFIG_DIR/keymap.json"
     capture_settings "$ZED_CONFIG_DIR/settings.json"
+    capture_extensions
 
     # Promote this machine's primary modifier back into the portable token.
     # The boundary rule avoids changing action names such as "ctrl::Action".
@@ -213,6 +251,7 @@ push() {
     mirror_optional_dir "$SKILLS_DIR" "$SKILLS_REPO_DIR"
     printf 'Captured %s configuration into %s\n' "$PLATFORM" "$REPO_DIR"
     printf 'Captured agent skills from %s\n' "$SKILLS_DIR"
+    printf 'Captured extension IDs from %s into auto_install_extensions\n' "$ZED_EXTENSIONS_DIR"
     printf 'Review the diff, then commit and push it with Git.\n'
 }
 
@@ -229,8 +268,8 @@ dirs_match() {
 }
 
 status() {
-    printf 'Platform: %s\nZed config: %s\nPrimary modifier: %s\nSkills: %s\n' \
-        "$PLATFORM" "$ZED_CONFIG_DIR" "$PRIMARY" "$SKILLS_DIR"
+    printf 'Platform: %s\nZed config: %s\nPrimary modifier: %s\nSkills: %s\nExtensions data: %s\n' \
+        "$PLATFORM" "$ZED_CONFIG_DIR" "$PRIMARY" "$SKILLS_DIR" "$ZED_EXTENSIONS_DIR"
     settings_temp=$(mktemp)
     keymap_temp=$(mktemp)
     trap 'rm -f "$settings_temp" "$keymap_temp"' EXIT HUP INT TERM
@@ -245,6 +284,8 @@ status() {
     else
         printf 'skills: differ or missing\n'
     fi
+    require_settings_tool
+    python3 "$SETTINGS_TOOL" extensions-status "$SETTINGS_FILE" "$ZED_EXTENSIONS_DIR"
 }
 
 require_main_checkout() {
@@ -414,8 +455,9 @@ Usage: zed-config <command>
   completion   Print completion code: completion <bash|zsh|fish>.
 
 The bundle includes settings, keymap, AGENTS.md, global tasks/debug definitions,
-local themes, snippets, and agent skills (~/.agents/skills). It intentionally
-excludes authentication, databases, extensions, prompt-library data, logs,
+local themes, snippets, agent skills (~/.agents/skills), and the installed
+extension ID list via auto_install_extensions. It intentionally excludes
+authentication, databases, extension install blobs, prompt-library data, logs,
 caches, and backups.
 
 Run `push` after deliberately changing Zed configuration on either computer.

@@ -100,10 +100,26 @@
         }
     },
     "auto_install_extensions": {
+        "catppuccin": true,
         "colored-zed-icons-theme": true,
+        "darcula-dark-okkano": true,
+        "dockerfile": true,
+        "fleet-themes": true,
+        "git-firefly": true,
         "html": true,
+        "ibm-5151": true,
+        "jetbrains-themes": true,
+        "log": true,
         "macos-classic": true,
-        "tsgo": true
+        "mcp-server-grafana": true,
+        "new-darcula": true,
+        "pylsp": true,
+        "toml": true,
+        "tsgo": true,
+        "vue": true,
+        "xml": true,
+        "xy-zed": true,
+        "zedokai": true
     },
     "centered_layout": {
         "left_padding": 0.165,

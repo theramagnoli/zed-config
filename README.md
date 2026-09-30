@@ -2,11 +2,11 @@
 
 This repository keeps a portable, non-secret Zed setup for three runtimes:
 
-| Runtime | Notes |
-| ------- | ----- |
-| macOS | Native Zed |
+| Runtime         | Notes                                                   |
+| --------------- | ------------------------------------------------------- |
+| macOS           | Native Zed                                              |
 | Windows via WSL | Sync from WSL into Windows-hosted Zed (`%APPDATA%/Zed`) |
-| Native Linux | e.g. Pop!_OS — native Zed under `~/.config/zed` |
+| Native Linux    | e.g. Pop!_OS — native Zed under `~/.config/zed`         |
 
 ## Prerequisites
 
@@ -14,11 +14,9 @@ This repository keeps a portable, non-secret Zed setup for three runtimes:
 - **Monaspace Radon** installed as a system font (UI and buffer font)
 - On WSL → Windows Zed: `powershell.exe` and `wslpath` available in the distro
 
-Theme and icon extensions referenced by the shared settings are declared in `auto_install_extensions`, so Zed installs them on first launch:
+Extensions are synced as an ID list in `settings.json` → `auto_install_extensions` (not as install blobs). On `push`, every non-dev extension installed on this machine is captured into that map. On `pull` / first launch, Zed installs any missing declared extensions automatically.
 
-- `macos-classic` (macOS Classic Light/Dark themes)
-- `colored-zed-icons-theme`
-- `html`
+`zed-config status` reports declared vs installed extensions. Override the local extensions data path with `ZED_EXTENSIONS_DIR` when needed.
 
 ## Install the command
 
@@ -91,11 +89,11 @@ ZED_CONFIG_DIR="$HOME/.config/zed" ./sync-zed.sh pull
 
 `settings.json` contains the shared configuration. Its nested objects are written alphabetically whenever the configuration is captured; the top-level appearance and font settings stay together at the beginning, followed by the remaining settings alphabetically. Files under `config/platform/` are overlays whose top-level keys remain specific to that platform:
 
-| Overlay | Used on | Typical keys |
-| ------- | ------- | ------------ |
-| `config/platform/windows.json` | Windows / WSL | `wsl_connections` |
-| `config/platform/macos.json` | macOS | optional Mac-only keys |
-| `config/platform/linux.json` | native Linux | optional Linux-only keys |
+| Overlay                        | Used on       | Typical keys             |
+| ------------------------------ | ------------- | ------------------------ |
+| `config/platform/windows.json` | Windows / WSL | `wsl_connections`        |
+| `config/platform/macos.json`   | macOS         | optional Mac-only keys   |
+| `config/platform/linux.json`   | native Linux  | optional Linux-only keys |
 
 The Windows overlay owns `wsl_connections`. During `pull`, the script merges those connections into the shared settings before writing `%APPDATA%/Zed/settings.json`. During a Windows/WSL `push`, it extracts the same key back into the overlay, so a later Mac or Linux update cannot erase the saved WSL projects.
 
@@ -112,9 +110,28 @@ JSON processing requires `python3`. The helper accepts Zed's JSON-with-comments 
 - global `tasks.json` and `debug.json`, when present
 - local `themes/` and `snippets/` directories
 - global agent skills from `~/.agents/skills` (stored in the repo as `config/skills/`)
+- installed extension IDs via `auto_install_extensions` in `settings.json`
 
 `pull` creates timestamped backups of those destination files first, including the skills directory.
 
 Skills live outside Zed's config directory. Override the local path with `ZED_SKILLS_DIR` when needed (default: `$HOME/.agents/skills`). On `push`, the local skills tree is captured into `config/skills/`; on `pull`, that tree is applied back to the local skills directory.
 
-The script intentionally excludes Zed databases, prompt-library data, extensions and extension state, logs, caches, sessions, lockfiles, local backups, and authentication data. Provider keys are stored in the OS keychain rather than `settings.json`, but external-agent credentials can have their own storage and are not copied. Extensions themselves are reinstalled via `auto_install_extensions` rather than copied between machines.
+### Extensions
+
+| Direction | Behavior                                                                                                                                            |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `push`    | Reads the local extensions data dir (`index.json` + `installed/`) and merges non-dev extension IDs into `settings.json` → `auto_install_extensions` |
+| `pull`    | Writes settings (including that map); Zed installs missing extensions on launch                                                                     |
+| `status`  | Compares declared IDs vs installed IDs                                                                                                              |
+
+Default extensions data paths:
+
+| Runtime       | Extensions directory                                               |
+| ------------- | ------------------------------------------------------------------ |
+| macOS         | `~/Library/Application Support/Zed/extensions`                     |
+| Linux         | `${XDG_DATA_HOME:-~/.local/share}/zed/extensions`                  |
+| Windows / WSL | `%LOCALAPPDATA%/Zed/extensions` (falls back to the Zed config dir) |
+
+Set `ZED_EXTENSIONS_DIR` to override. Explicit `"extension-id": false` entries are preserved as opt-outs. Dev extensions are skipped. Extension install blobs, caches, and extension state are never copied.
+
+The script intentionally excludes Zed databases, prompt-library data, extension install directories and extension state, logs, caches, sessions, lockfiles, local backups, and authentication data. Provider keys are stored in the OS keychain rather than `settings.json`, but external-agent credentials can have their own storage and are not copied.
