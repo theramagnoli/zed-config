@@ -10,7 +10,7 @@
         "mode": "light"
     },
     "ui_font_family": "Monaspace Radon Semiwide",
-    "ui_font_size": 13.5,
+    "ui_font_size": 13,
     "ui_font_weight": 400.0,
     "buffer_font_family": "Monaspace Radon Semiwide",
     "buffer_font_features": {
@@ -18,13 +18,13 @@
         "clig": true,
         "liga": true
     },
-    "buffer_font_size": 12.5,
+    "buffer_font_size": 12,
     "buffer_font_weight": 400.0,
     "buffer_line_height": {
         "custom": 2
     },
-    "agent_buffer_font_size": 12.5,
-    "agent_ui_font_size": 13.5,
+    "agent_buffer_font_size": 12,
+    "agent_ui_font_size": 13,
     "text_rendering_mode": "platform_default",
     "agent": {
         "auto_compact": {
@@ -38,10 +38,10 @@
             "provider": "opencode"
         },
         "default_model": {
-            "effort": "medium",
+            "effort": "high",
             "enable_thinking": true,
-            "model": "grok-4.5",
-            "provider": "x_ai_subscribed"
+            "model": "go/deepseek-v4.1-flash",
+            "provider": "opencode"
         },
         "dock": "right",
         "favorite_models": [
@@ -55,6 +55,24 @@
                 "effort": "high",
                 "enable_thinking": true,
                 "model": "go/deepseek-flash",
+                "provider": "opencode"
+            },
+            {
+                "effort": "high",
+                "enable_thinking": true,
+                "model": "go/deepseek-v4.1-flash",
+                "provider": "opencode"
+            },
+            {
+                "effort": "high",
+                "enable_thinking": true,
+                "model": "grok-4.6",
+                "provider": "x_ai_subscribed"
+            },
+            {
+                "effort": "high",
+                "enable_thinking": true,
+                "model": "go/glm-5.3-flash",
                 "provider": "opencode"
             }
         ],
@@ -97,6 +115,7 @@
         }
     },
     "auto_install_extensions": {
+        "browser-tools-context-server": true,
         "catppuccin": true,
         "colored-zed-icons-theme": true,
         "darcula-dark-okkano": true,
@@ -108,8 +127,11 @@
         "jetbrains-themes": true,
         "log": true,
         "macos-classic": true,
-        "mcp-server-grafana": true,
+        "mcp-server-brave-search": true,
+        "mcp-server-figma": true,
+        "mcp-server-puppeteer": true,
         "new-darcula": true,
+        "postgres-context-server": true,
         "pylsp": true,
         "toml": true,
         "tsgo": true,
@@ -198,7 +220,7 @@
         "opencode": {
             "show_free_models": false,
             "show_go_models": true,
-            "show_zen_models": false
+            "show_zen_models": true
         }
     },
     "languages": {
