@@ -38,10 +38,10 @@
             "provider": "opencode"
         },
         "default_model": {
-            "effort": "high",
+            "effort": "medium",
             "enable_thinking": true,
-            "model": "go/deepseek-v4.1-flash",
-            "provider": "opencode"
+            "model": "grok-4.5",
+            "provider": "x_ai_subscribed"
         },
         "dock": "right",
         "favorite_models": [
