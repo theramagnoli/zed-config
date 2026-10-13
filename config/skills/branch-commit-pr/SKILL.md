@@ -15,23 +15,23 @@ Use this skill when the user asks to:
 - create a `feature/`, `fix/`, or `chore/` branch from dirty work, commit, and open a PR
 - "branch-commit-pr", "ship this change", or similar
 
-Do **not** use this skill when the user only wants a commit, only a PR, or is already on the correct feature branch with commits ready (use `commit` or `create-pr` alone).
+Do not use this skill when the user only wants a commit, only a PR, or is already on the correct feature branch with commits ready (use `commit` or `create-pr` alone).
 
 ## Related skills (required)
 
-This skill **orchestrates** existing skills. Load and follow them; do not reimplement their rules:
+This skill orchestrates existing skills. Load and follow them; do not reimplement their rules:
 
-1. **`commit`** — granular Spanish `Se + verbo` commits
-2. **`create-pr`** — Spanish PR title/description, profiles (`default` / `cam`), approval gate, `gh pr create`
+1. `commit` - granular Spanish `Se + verbo` commits
+2. `create-pr` - Spanish PR title/description, profiles (`default` / `cam`), approval gate, `gh pr create`
 
 Invoke them with the `skill` tool when you reach those steps.
 
 ## Goal
 
-1. Remember the **starting branch** (PR base).
+1. Remember the starting branch (PR base).
 2. Create a new branch: `feature/*`, `fix/*`, or `chore/*`.
-3. Commit the relevant uncommitted changes via **`commit`**.
-4. Open a PR into the starting branch via **`create-pr`**.
+3. Commit the relevant uncommitted changes via `commit`.
+4. Open a PR into the starting branch via `create-pr`.
 
 ## Process
 
@@ -48,16 +48,16 @@ Record:
 
 | Value            | Source                                                               |
 | ---------------- | -------------------------------------------------------------------- |
-| **Base branch**  | Current branch name at start (e.g. `main`, `develop`, `feature/foo`) |
-| **Working tree** | Untracked / unstaged / staged files that make up "the change"        |
+| Base branch  | Current branch name at start (e.g. `main`, `develop`, `feature/foo`) |
+| Working tree | Untracked / unstaged / staged files that make up "the change"        |
 
-**Hard stop** if there are **no** uncommitted changes and nothing staged: tell the user there is nothing to ship with this skill. (If they already have commits on a feature branch, point them to `create-pr`.)
+Hard stop if there are no uncommitted changes and nothing staged: tell the user there is nothing to ship with this skill. (If they already have commits on a feature branch, point them to `create-pr`.)
 
-**Hard stop** if the repo is in a bisect/rebase/merge conflict state: report and ask how to proceed.
+Hard stop if the repo is in a bisect/rebase/merge conflict state: report and ask how to proceed.
 
 ### 2. Scope the change
 
-- Default: ship **all** current uncommitted changes as one logical work unit on the new branch.
+- Default: ship all current uncommitted changes as one logical work unit on the new branch.
 - If the working tree mixes unrelated work, either:
     - ask which paths belong to this ship, or
     - commit only the coherent subset and leave the rest unstaged (prefer asking when ambiguous).
@@ -65,7 +65,7 @@ Record:
 
 ### 3. Choose branch type and name
 
-Prefix **must** be one of:
+Prefix must be one of:
 
 | Prefix     | When                                                    |
 | ---------- | ------------------------------------------------------- |
@@ -75,14 +75,14 @@ Prefix **must** be one of:
 
 Infer from the diff. If unclear, ask once.
 
-**Name rules:**
+Name rules:
 
 - `feature|fix|chore/<short-kebab-description>`
-- The slug **must be in English** (kebab-case). Do not use Spanish words in the branch name.
+- The slug must be in English (kebab-case). Do not use Spanish words in the branch name.
 - Short and descriptive; no spaces; lowercase; ASCII only (no accents)
 - No ticket noise unless the user supplies a ticket id
 - Examples: `feature/user-search`, `fix/locker-date-validation`, `chore/update-eslint`
-- Commit messages and PR title/body stay in **Spanish** (via `commit` / `create-pr`); only the branch name is English
+- Commit messages and PR title/body stay in Spanish (via `commit` / `create-pr`); only the branch name is English
 
 If the user already gave a full branch name with a valid prefix:
 
@@ -91,15 +91,17 @@ If the user already gave a full branch name with a valid prefix:
 
 If a local branch with that name already exists, stop and ask for another name (do not overwrite).
 
-### 4. Approval gate — branch plan (before switching)
+### 4. Approval gate: branch plan (before switching)
 
-Show and **wait for explicit approval** before creating the branch or committing:
+Show the plan as a rendered markdown table and wait for explicit approval before creating the branch or committing:
 
-- Base branch (PR target) = starting branch
-- New branch name (`feature/` \| `fix/` \| `chore/` + slug)
-- Files / change scope to include
-- Intended commit approach (one commit vs several granular ones per `commit` skill)
-- PR profile: `default` or `cam` (same rules as `create-pr`; ask once if unclear)
+| Field | Value |
+| ----- | ----- |
+| Base (PR target) | starting branch |
+| New branch | `feature/...` / `fix/...` / `chore/...` + slug |
+| Scope | files / change scope to include |
+| Commits | intended commit approach (one commit vs several granular ones per `commit` skill) |
+| PR profile | `default` or `cam` (same rules as `create-pr`; ask once if unclear) |
 
 Do not create the branch, commit, push, or open a PR until the user approves this plan (they may edit the branch name or scope).
 
@@ -115,11 +117,11 @@ Use the approved name. Confirm with `git --no-pager rev-parse --abbrev-ref HEAD`
 
 If checkout fails because of conflicts with the branch switch, stop and report; do not force.
 
-**Do not** commit on the base branch. **Do not** push until the create-pr step (after commit + PR plan approval).
+Do not commit on the base branch. Do not push until the create-pr step (after commit + PR plan approval).
 
-### 6. Commit — use the `commit` skill
+### 6. Commit: use the `commit` skill
 
-Load **`commit`** and follow it fully:
+Load `commit` and follow it fully:
 
 - Inspect diff on the new branch
 - Small granular Spanish commits (`Se` + verbo)
@@ -130,37 +132,39 @@ After commits, `git --no-optional-locks status` should show a clean tree for the
 
 If commit fails, stop; do not open a PR.
 
-### 7. Create PR — use the `create-pr` skill
+### 7. Create PR: use the `create-pr` skill
 
-Load **`create-pr`** and follow it fully, with these **overrides** for this workflow:
+Load `create-pr` and follow it fully, with these overrides for this workflow:
 
-1. **Base branch** = the **starting branch** captured in step 1 (not necessarily `main`/`master`).
+1. Base branch = the starting branch captured in step 1 (not necessarily `main`/`master`).
 2. Current branch must be the new `feature/`/`fix/`/`chore/` branch with commits ahead of base.
 3. Profile = the one approved in step 4 (`default` or `cam`), unless the user changes it at the PR approval gate.
-4. Still run create-pr’s inspect steps, draft Spanish title + flat bullet description, and **second approval gate** (title, body, base, profile metadata) before push / `gh pr create`.
+4. Still run create-pr's inspect steps, draft Spanish title + prose overview (2-4 simple sentences) + flat bullet list, and second approval gate (title, body, base, profile metadata) before push / `gh pr create`.
 5. Push with `git push -u origin HEAD` only after that approval.
 6. `gh pr create --base <starting-branch> ...` with profile flags from create-pr.
 
-If create-pr would normally refuse because base is `main` and current is also default — that does not apply here: current is the new side branch and base is the recorded starting branch.
+If create-pr would normally refuse because base is `main` and current is also default, that does not apply here: current is the new side branch and base is the recorded starting branch.
 
 ### 8. Final report
 
-Return:
+Return a rendered markdown table:
 
-- New branch name
-- Base branch (PR target)
-- Commit subjects created
-- PR URL
-- Profile used
-- Anything skipped (e.g. missing CAM label/reviewer)
+| Result | Value |
+| ------ | ----- |
+| New branch | new branch name |
+| Base | base branch (PR target) |
+| Commits | commit subjects created |
+| PR | PR URL |
+| Profile | profile used |
+| Skipped | anything skipped (e.g. missing CAM label/reviewer) |
 
 ## Important constraints
 
-- **Never** commit directly on the original/base branch as part of this flow.
-- **Never** push or `gh pr create` before the create-pr approval gate.
-- **Never** invent commits or PR bullets not supported by the diff.
-- **Never** delete or reset user changes to “clean” the tree without explicit ask.
-- Prefer leaving the user on the **new** branch at the end (natural after the flow).
+- Never commit directly on the original/base branch as part of this flow.
+- Never push or `gh pr create` before the create-pr approval gate.
+- Never invent commits or PR bullets not supported by the diff.
+- Never delete or reset user changes to “clean” the tree without explicit ask.
+- Prefer leaving the user on the new branch at the end (natural after the flow).
 - If the user aborts mid-flow after branch creation but before PR, leave the branch as-is and report status; do not delete the branch unless they ask.
 
 ## Branch naming quick reference
@@ -171,7 +175,7 @@ fix/<english-slug>       # bugfix
 chore/<english-slug>     # maintenance / tooling
 ```
 
-Slug language: **English only** (e.g. `feature/user-search`, not `feature/busqueda-usuarios`).
+Slug language: English only (e.g. `feature/user-search`, not `feature/busqueda-usuarios`).
 
 ## Failure shortcuts
 
@@ -186,15 +190,14 @@ Slug language: **English only** (e.g. `feature/user-search`, not `feature/busque
 
 ## Example shape of the first approval message
 
-```text
-Plan branch-commit-pr
-- Base (PR target): main
-- New branch: feature/user-search
-- Scope: app/Http/Controllers/UserController.php, resources/views/users/index.blade.php
-- Commits: granular via commit skill
-- PR profile: cam
+| Field | Value |
+| ----- | ----- |
+| Base (PR target) | `main` |
+| New branch | `feature/user-search` |
+| Scope | `app/Http/Controllers/UserController.php`, `resources/views/users/index.blade.php` |
+| Commits | granular via commit skill |
+| PR profile | `cam` |
 
-¿Lo apruebas? (puedes cambiar nombre de rama, scope o perfil)
-```
+Do you approve? (you may change the branch name, scope, or profile)
 
-After approval → `git checkout -b ...` → `commit` skill → `create-pr` skill with `--base` = starting branch.
+After approval: `git checkout -b ...`, then `commit` skill, then `create-pr` skill with `--base` = starting branch.

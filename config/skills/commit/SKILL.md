@@ -14,10 +14,18 @@ Use this skill when the user asks to commit changes, stage work, or draft a comm
 ## Process
 
 1. Inspect the working tree with `git --no-optional-locks status` and `git --no-pager diff` (plus `git --no-pager diff --staged` if needed).
-2. Group changes into **small, granular commits**. Separate independent changes; never bundle unrelated work.
-3. Stage only the files that belong to the current commit.
-4. Draft the commit message with the rules below from the actual diff. Do not invent behavior that is not in the changes.
-5. Commit with a HEREDOC so multiline messages stay intact. Example:
+2. Group changes into small, granular commits. Separate independent changes; never bundle unrelated work.
+3. If more than one granular commit is planned, first present a rendered markdown overview table with one row per planned commit, then proceed to create them one by one:
+
+   | Commit | Message |
+   |---|---|
+   | 1 | Se agrega ... |
+   | 2 | Se corrige ... |
+
+   For a single commit, no table is needed, just create it (or return only the message in draft-only mode).
+4. Stage only the files that belong to the current commit.
+5. Draft the commit message with the rules below from the actual diff. Do not invent behavior that is not in the changes.
+6. Commit with a HEREDOC so multiline messages stay intact. Example:
 
 ```bash
 git commit -m "$(cat <<'EOF'
@@ -29,13 +37,13 @@ EOF
 )"
 ```
 
-6. Run `git --no-optional-locks status` after committing to confirm the result.
-7. If there are more independent change groups left, repeat from step 2 for each commit.
-8. Do not push unless the user explicitly asks.
+7. Run `git --no-optional-locks status` after committing to confirm the result.
+8. If there are more independent change groups left, repeat from step 4 for each commit.
+9. Do not push unless the user explicitly asks.
 
 ## Commit message rules
 
-Generate **one** commit message in Spanish from the staged changes.
+Generate one commit message in Spanish from the staged changes.
 
 First identify the main intent of the change. Do not just list files, functions, or modified lines. Explain what behavior, functionality, or structure was added, fixed, modified, or removed.
 
@@ -47,7 +55,7 @@ First identify the main intent of the change. Do not just list files, functions,
 - Use present indicative; no infinitives or participles
 - Describe the result or purpose, not only the technical action
 - When several related changes exist, prioritize the most important functional change
-- Recommended length: 40–90 characters
+- Recommended length: 40-90 characters
 - No trailing period
 - No prefixes like `feat:`, `fix:`, `refactor:`, or `chore:`
 - Do not mention file names unless indispensable to understand the change
@@ -125,5 +133,5 @@ fix: se corrige formulario
 
 ### Output when only drafting a message
 
-If the user only asks for the message and not to commit, return **only** the final commit message.
+If the user only asks for the message and not to commit, return only the final commit message.
 Do not include explanations, headings, quotes, code fences, meta commentary, or the original diff.

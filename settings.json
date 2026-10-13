@@ -148,7 +148,12 @@
         "button": false,
         "dock": "right"
     },
-    "context_servers": {},
+    "context_servers": {
+        "TickTick": {
+            "enabled": true,
+            "url": "https://mcp.ticktick.com"
+        }
+    },
     "cursor_blink": true,
     "cursor_shape": "block",
     "debugger": {
