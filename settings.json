@@ -9,22 +9,22 @@
         "light": "Colored Zed Icons Theme Light",
         "mode": "light"
     },
-    "ui_font_family": "Monaspace Radon Semiwide",
-    "ui_font_size": 13,
+    "ui_font_family": "Hack Nerd Font Mono",
+    "ui_font_size": 15,
     "ui_font_weight": 400.0,
-    "buffer_font_family": "Monaspace Radon Semiwide",
+    "buffer_font_family": "Hack Nerd Font Mono",
     "buffer_font_features": {
         "calt": true,
         "clig": true,
         "liga": true
     },
-    "buffer_font_size": 12,
+    "buffer_font_size": 13.5,
     "buffer_font_weight": 400.0,
     "buffer_line_height": {
-        "custom": 2
+        "custom": 1.5
     },
-    "agent_buffer_font_size": 12,
-    "agent_ui_font_size": 13,
+    "agent_buffer_font_size": 13.5,
+    "agent_ui_font_size": 15,
     "text_rendering_mode": "platform_default",
     "agent": {
         "auto_compact": {
@@ -38,10 +38,10 @@
             "provider": "opencode"
         },
         "default_model": {
-            "effort": "medium",
+            "effort": "high",
             "enable_thinking": true,
-            "model": "grok-4.5",
-            "provider": "x_ai_subscribed"
+            "model": "go/muse-spark-1.3-contributor",
+            "provider": "opencode"
         },
         "dock": "right",
         "favorite_models": [
@@ -73,6 +73,12 @@
                 "effort": "high",
                 "enable_thinking": true,
                 "model": "go/glm-5.3-flash",
+                "provider": "opencode"
+            },
+            {
+                "effort": "high",
+                "enable_thinking": true,
+                "model": "go/muse-spark-1.3-contributor",
                 "provider": "opencode"
             }
         ],
@@ -149,9 +155,9 @@
         "dock": "right"
     },
     "context_servers": {
-        "TickTick": {
+        "Todoist": {
             "enabled": true,
-            "url": "https://mcp.ticktick.com"
+            "url": "https://ai.todoist.net/mcp"
         }
     },
     "cursor_blink": true,
@@ -223,7 +229,6 @@
     },
     "language_models": {
         "opencode": {
-            "show_free_models": false,
             "show_go_models": true,
             "show_zen_models": true
         }
@@ -442,13 +447,6 @@
                     "updateImportsOnFileMove": {
                         "enabled": "always"
                     }
-                }
-            }
-        },
-        "vue": {
-            "initialization_options": {
-                "typescript": {
-                    "tsdk": "node_modules/typescript/lib"
                 }
             }
         }

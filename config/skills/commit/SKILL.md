@@ -1,6 +1,6 @@
 ---
 name: commit
-description: Create small granular git commits with Spanish commit messages following the repo format (Se + verbo). Use when the user asks to commit, create a commit, or write a commit message.
+description: Trigger when the user asks to commit, stage work, or draft a commit message.
 ---
 
 # Commit
@@ -15,16 +15,10 @@ Use this skill when the user asks to commit changes, stage work, or draft a comm
 
 1. Inspect the working tree with `git --no-optional-locks status` and `git --no-pager diff` (plus `git --no-pager diff --staged` if needed).
 2. Group changes into small, granular commits. Separate independent changes; never bundle unrelated work.
-3. If more than one granular commit is planned, first present a rendered markdown overview table with one row per planned commit, then proceed to create them one by one:
+3. If more than one granular commit is planned, create them one by one without presenting the plan first. For a single commit, just create it (or return only the message in draft-only mode).
 
-   | Commit | Message |
-   |---|---|
-   | 1 | Se agrega ... |
-   | 2 | Se corrige ... |
-
-   For a single commit, no table is needed, just create it (or return only the message in draft-only mode).
 4. Stage only the files that belong to the current commit.
-5. Draft the commit message with the rules below from the actual diff. Do not invent behavior that is not in the changes.
+5. Draft the commit message with the rules below from the actual diff.
 6. Commit with a HEREDOC so multiline messages stay intact. Example:
 
 ```bash
@@ -40,6 +34,15 @@ EOF
 7. Run `git --no-optional-locks status` after committing to confirm the result.
 8. If there are more independent change groups left, repeat from step 4 for each commit.
 9. Do not push unless the user explicitly asks.
+10. When more than one commit was created, close with a rendered markdown overview table with one row per commit plus the total diff:
+
+    | Commit    | Message        | Diff     |
+    | --------- | -------------- | -------- |
+    | `abc1234` | Se agrega ...  | +120 -30 |
+    | `def5678` | Se corrige ... | +15 -8   |
+    | **Total** |                | +135 -38 |
+
+    Get per-commit numbers with `git show --shortstat <sha>` and the total with `git diff --shortstat` over the committed range. For a single commit, no table is needed.
 
 ## Commit message rules
 
@@ -59,12 +62,7 @@ First identify the main intent of the change. Do not just list files, functions,
 - No trailing period
 - No prefixes like `feat:`, `fix:`, `refactor:`, or `chore:`
 - Do not mention file names unless indispensable to understand the change
-- Avoid generic subjects such as:
-  - Se realizan cambios
-  - Se actualizan archivos
-  - Se corrigen errores
-  - Se hacen ajustes
-  - Se modifica código
+- Avoid generic subjects such as "Se realizan cambios", "Se corrigen errores" o "Se hacen ajustes"
 
 ### Body (optional)
 
@@ -86,10 +84,8 @@ Body rules:
 
 ### Writing criteria
 
-- The full message must be in Spanish
 - Common technical English terms are allowed (endpoint, middleware, snapshot, join, payload, hook, cache, etc.)
 - Keep proper names of classes, methods, endpoints, tables, and technologies when needed
-- Avoid explaining how each line changed; summarize what the change achieved
 - Do not invent functionality, causes, or results that cannot be deduced from the diff
 - If the change is mainly a fix, use `corrige` or `ajusta` and state the exact behavior fixed
 - If the change only reorganizes code without behavior changes, use `refactoriza`
@@ -98,19 +94,7 @@ Body rules:
 ### Correct examples
 
 ```text
-Se agrega envío de metadatos a POK
-```
-
-```text
 Se corrige validación de fechas en reservaciones de lockers
-```
-
-```text
-Se integra autorización por grupos para crear secciones
-```
-
-```text
-Se actualiza cálculo del estado de los registros de lockers
 ```
 
 ```text
@@ -125,9 +109,7 @@ Se agrega búsqueda de usuarios por nombre y matrícula
 ```text
 Se realizan varios cambios
 Se modifican archivos del controlador
-Se actualiza código y se corrigen errores
 Agregar validación de usuarios
-Cambios en lockers
 fix: se corrige formulario
 ```
 

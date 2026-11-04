@@ -1,6 +1,6 @@
 ---
 name: create-pr
-description: Create a GitHub pull request in Spanish with title/description conventions, assignee, and optional CAM profile (reviewer CAM-UANL + ready-for-review). Use when the user asks to open a PR, create a pull request, prepare PR details, or requests the CAM/CAM-UANL PR variant.
+description: Trigger when the user asks to open a PR, create a pull request, prepare PR details, or requests the CAM/CAM-UANL PR variant.
 ---
 
 # Create PR
@@ -25,9 +25,7 @@ Choose one profile before drafting metadata. Shared steps (git inspect, title, d
 1. If the user explicitly asks for the CAM flow, use `cam`.
 2. If the user explicitly asks for a PR without reviewer or label, use `default`.
 3. If unclear, ask once: default or CAM?
-4. State the chosen profile in the approval plan (for example `Profile: cam`).
-
-Do not apply CAM reviewer or label on the default profile. Do not skip them on the cam profile unless missing in the repo (then report what was skipped).
+4. The approval plan records the chosen profile (see the `Profile` row in the Approval gate table).
 
 ## Process
 
@@ -42,8 +40,8 @@ Do not apply CAM reviewer or label on the default profile. Do not skip them on t
     - use the `commit` skill when they want commits created
 4. Confirm the current branch is not the base branch (`main` or `master`). If it is, stop and ask for a feature branch name.
 5. Determine the base branch (`main` or `master`, or the repo default).
-6. Draft the PR title and description from the overall changes in the branch (commits plus diff). Focus on completed tasks, not a commit-by-commit recap.
-7. Show the PR plan as a rendered markdown table as defined in Approval gate and wait for explicit approval before creating or pushing anything.
+6. Draft the PR title and description from the overall changes in the branch (commits plus diff).
+7. Show the PR plan as defined in Approval gate and get explicit approval before continuing.
 8. After approval:
     - Push the branch if needed: `git push -u origin HEAD`
     - Create the PR with `gh` using a HEREDOC for the body
@@ -78,16 +76,17 @@ Se integra autorización por grupos en secciones
 
 - Write the description in Spanish
 - Use this exact body format:
-  1. Prose overview: 2-4 simple Spanish sentences explaining what changed and why (the outcome, not implementation details)
-  2. Blank line
-  3. Flat bullet list of the concrete changes made
+    1. Prose overview: 2-4 simple Spanish sentences explaining what changed and why (the outcome, not implementation details)
+    2. Blank line
+    3. Flat bullet list of the concrete changes made
 - Keep the prose simple and understandable. Avoid jargon and long explanations
+- Open from the problem or motivation when there is one (what was broken, missing, or slow), then say what changed. Reserve the "Este PR…" opening for pure additions with no problem behind them
 - Do not focus on commits. Describe the overall tasks completed in the PR
 - Each bullet must be a concrete completed change
 - Keep bullets concise and factual. Do not invent work that is not in the branch
 - No titles or headings in the body
 
-### Description example
+### Description examples
 
 ```text
 Este PR agrega la búsqueda de usuarios en administración para localizar cuentas más rápido. Ahora se puede buscar por nombre y matrícula y la tabla muestra las coincidencias encontradas.
@@ -95,6 +94,13 @@ Este PR agrega la búsqueda de usuarios en administración para localizar cuenta
 - Se agrega búsqueda de usuarios por nombre y matrícula
 - Se normaliza el texto de búsqueda con unaccent
 - Se actualiza la tabla de resultados para mostrar coincidencias
+```
+
+```text
+Las reservaciones de lockers aceptaban fechas inválidas y quedaban en un estado inconsistente. Ahora las fechas se validan antes de guardar y los registros muestran el estado correcto.
+
+- Se corrige validación de fechas en reservaciones de lockers
+- Se actualiza cálculo del estado de los registros de lockers
 ```
 
 ## Profile metadata
@@ -135,11 +141,7 @@ gh pr create \
   --base main \
   --title "Se agrega búsqueda de usuarios en administración" \
   --body "$(cat <<'EOF'
-Este PR agrega la búsqueda de usuarios en administración para localizar cuentas más rápido. Ahora se puede buscar por nombre y matrícula y la tabla muestra las coincidencias encontradas.
-
-- Se agrega búsqueda de usuarios por nombre y matrícula
-- Se normaliza el texto de búsqueda con unaccent
-- Se actualiza la tabla de resultados para mostrar coincidencias
+<exact body text approved at the gate>
 EOF
 )" \
   --assignee theramagnoli
@@ -154,11 +156,7 @@ gh pr create \
   --base main \
   --title "Se agrega búsqueda de usuarios en administración" \
   --body "$(cat <<'EOF'
-Este PR agrega la búsqueda de usuarios en administración para localizar cuentas más rápido. Ahora se puede buscar por nombre y matrícula y la tabla muestra las coincidencias encontradas.
-
-- Se agrega búsqueda de usuarios por nombre y matrícula
-- Se normaliza el texto de búsqueda con unaccent
-- Se actualiza la tabla de resultados para mostrar coincidencias
+<exact body text approved at the gate>
 EOF
 )" \
   --assignee theramagnoli \
@@ -172,35 +170,49 @@ Adjust `--base` to the repo default. If `--reviewer CAM-UANL` fails because it i
 
 Never push or run `gh pr create` until the user approves the plan.
 
-When asking for approval, show the PR plan as a rendered markdown table with exactly these rows, in this order, then ask for approval:
+When asking for approval, show the PR plan as a rendered markdown table with exactly these rows, in this order, followed by the exact title and body text and a diff breakdown by area, then ask for approval in plain message text:
 
-| Field | Value |
-| ----- | ----- |
-| Profile | `default` or `cam` |
-| Branch | current branch name, plus whether it needs to be pushed |
-| Base | base branch name |
-| Title | full Spanish title draft |
-| Summary | 2-4 simple sentences describing the outcome |
-| Changes | bullets for each concrete change, separated with `<br>` |
-| Assignee | assignee for the selected profile |
-| Reviewer | reviewer for the selected profile, or _(none)_ |
-| Label | label for the selected profile, or _(none)_ |
+| Field    | Value                                                   |
+| -------- | ------------------------------------------------------- |
+| Profile  | `default` or `cam`                                      |
+| Branch   | current branch name, plus whether it needs to be pushed |
+| Base     | base branch name                                        |
+| Title    | full Spanish title draft                                |
+| Summary  | 2-4 simple sentences describing the outcome             |
+| Changes  | bullets for each concrete change, separated with `<br>` |
+| Assignee | assignee for the selected profile                       |
+| Reviewer | reviewer for the selected profile, or _(none)_          |
+| Label    | label for the selected profile, or _(none)_             |
 
 Example plan format:
 
-| Field | Value |
-| ----- | ----- |
-| Profile | default |
-| Branch | feature/user-search |
-| Base | main |
-| Title | Se agrega búsqueda de usuarios en administración |
-| Summary | Este PR agrega la búsqueda de usuarios en administración para localizar cuentas más rápido. Ahora se puede buscar por nombre y matrícula y la tabla muestra las coincidencias encontradas. |
-| Changes | - Se agrega búsqueda de usuarios por nombre y matrícula<br>- Se normaliza el texto de búsqueda con unaccent<br>- Se actualiza la tabla de resultados para mostrar coincidencias |
-| Assignee | @theramagnoli |
-| Reviewer | _(none)_ |
-| Label | _(none)_ |
+| Field    | Value                                                                                                                                                                                      |
+| -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Profile  | default                                                                                                                                                                                    |
+| Branch   | feature/user-search                                                                                                                                                                        |
+| Base     | main                                                                                                                                                                                       |
+| Title    | Se agrega búsqueda de usuarios en administración                                                                                                                                           |
+| Summary  | Este PR agrega la búsqueda de usuarios en administración para localizar cuentas más rápido. Ahora se puede buscar por nombre y matrícula y la tabla muestra las coincidencias encontradas. |
+| Changes  | - Se agrega búsqueda de usuarios por nombre y matrícula<br>- Se normaliza el texto de búsqueda con unaccent<br>- Se actualiza la tabla de resultados para mostrar coincidencias            |
+| Assignee | @theramagnoli                                                                                                                                                                              |
+| Reviewer | _(none)_                                                                                                                                                                                   |
+| Label    | _(none)_                                                                                                                                                                                   |
 
-After the table, ask for approval before pushing or creating anything. Show the exact title and body text that will be used so the user can edit it.
+### Diff breakdown
+
+Alongside the plan, show what kind of change this is by grouping the branch diff against the base. Use `git diff --numstat <base>...HEAD` and bucket the paths:
+
+| Area                     | + / -    |
+| ------------------------ | -------- |
+| Backend (business logic) | +120 -30 |
+| Views (frontend pages)   | +40 -5   |
+| Tests                    | +60 -0   |
+| Config                   | +3 -1    |
+| Total                    | +223 -36 |
+
+Adapt the path prefixes to the repo layout (`app/` or `src/` for backend, `resources/views` or `pages/` for views, `tests/` or `*.test.*` for tests, `config/` or `*.config.*` for config). Omit areas with no changes.
+
+Always show the full overview (plan table plus exact title, body, and diff breakdown) before asking. Never ask for approval on a PR the user hasn't seen in full, and never use interactive question prompts, option pickers, or approval dialogs: ask in the same message, in plain text, and let the user reply or edit any field in chat.
 
 ## Draft-only requests
 
@@ -209,13 +221,12 @@ If the user only wants the PR title and description, return only those in the fi
 Example:
 
 ```text
-Se agrega búsqueda de usuarios en administración
+Se corrige validación de fechas en reservaciones de lockers
 
-Este PR agrega la búsqueda de usuarios en administración para localizar cuentas más rápido. Ahora se puede buscar por nombre y matrícula y la tabla muestra las coincidencias encontradas.
+Las reservaciones de lockers aceptaban fechas inválidas y quedaban en un estado inconsistente. Ahora las fechas se validan antes de guardar y los registros muestran el estado correcto.
 
-- Se agrega búsqueda de usuarios por nombre y matrícula
-- Se normaliza el texto de búsqueda con unaccent
-- Se actualiza la tabla de resultados para mostrar coincidencias
+- Se corrige validación de fechas en reservaciones de lockers
+- Se actualiza cálculo del estado de los registros de lockers
 ```
 
 Do not push or create the PR on draft-only requests.

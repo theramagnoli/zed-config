@@ -1,6 +1,6 @@
 ---
 name: create-branch-for-task
-description: Create a feature/fix/chore git branch for a task after confirming name and base branch with the user. Default base is develop (fetch/pull remote first); optionally create from the current branch. Use when the user asks to create a branch, start a task branch, or open work on a new branch before coding.
+description: Trigger when the user asks to create a branch, start a task branch, or open work on a new branch before coding.
 ---
 
 # Create Branch for Task
@@ -15,7 +15,7 @@ Use this skill when the user asks to:
 - start work on a new branch
 - "create-branch-for-task", "branch for the task", or similar
 
-Do not use this skill when the user wants branch + commit + PR in one flow (use `branch-commit-pr`), or only a commit/PR (`commit` / `create-pr`).
+Do not use this skill when the user only wants a commit or a PR (`commit` / `create-pr`).
 
 ## Goal
 
@@ -38,10 +38,13 @@ Name format: `feature|fix|chore/<short-kebab-description>`
 
 - Slug must be in English (kebab-case). Never Spanish words in the branch name.
 - Lowercase ASCII only; no spaces, accents, or underscores
-- Short and descriptive; no ticket noise unless the user supplies a ticket id
+- Shape the slug as a short readable phrase (verb + object, 2-4 words), not a pile of keywords. Prefer dropping words over keeping them; if it takes more than 4 words, it is saying too much.
+- Read the full branch name back before proposing it. It should sound like a short phrase (`fix/validate-locker-dates`), not a tag cloud (`fix/lockers-module-date-validation-bug`).
+- No ticket noise unless the user supplies a ticket id
 - Derive the slug from the user's task description or prior conversation context
 - If the user gives a Spanish description, translate the intent into an English kebab slug
 - Examples: `feature/user-search`, `fix/locker-date-validation`, `chore/update-eslint`
+- Word pile vs readable: `feature/admin-users-table-search-pagination` becomes `feature/user-search`; `fix/lockers-module-date-validation-bug` becomes `fix/locker-date-validation`
 
 If the user already supplies a full name with a valid prefix:
 
@@ -51,12 +54,12 @@ If the user already supplies a full name with a valid prefix:
 ## Base branch rules
 
 1. Default base: `develop`
-   - Unless the user says otherwise, create the new branch from `develop`.
-   - Before creating: fetch remote and update local `develop` with remote changes.
+    - Unless the user says otherwise, create the new branch from `develop`.
+    - Before creating: fetch remote and update local `develop` with remote changes.
 2. Current branch base
-   - Also common: create from the branch the user is already on when they ask for that, or when they say "from here" / "from current".
+    - Also common: create from the branch the user is already on when they ask for that, or when they say "from here" / "from current".
 3. Explicit base
-   - If the user names another base (`main`, a feature branch, etc.), use that after confirmation.
+    - If the user names another base (`main`, a feature branch, etc.), use that after confirmation.
 
 Never create the branch from a stale local base when the agreed base is a remote-tracking branch you can update (especially `develop`).
 
@@ -73,11 +76,11 @@ From the project root, run:
 
 Record:
 
-| Value              | Source                                      |
-| ------------------ | ------------------------------------------- |
-| Current branch | `HEAD`                                      |
-| Proposed base  | `develop` by default, or user/current       |
-| Working tree   | clean vs dirty (uncommitted changes)        |
+| Value          | Source                                |
+| -------------- | ------------------------------------- |
+| Current branch | `HEAD`                                |
+| Proposed base  | `develop` by default, or user/current |
+| Working tree   | clean vs dirty (uncommitted changes)  |
 
 Hard stop if the repo is in bisect/rebase/merge conflict: report and ask how to proceed.
 
@@ -97,21 +100,16 @@ If a local branch with the proposed name already exists, propose a different nam
 
 Show the plan as a rendered markdown table and wait for explicit approval before any fetch/pull/checkout that creates the branch:
 
-| Field | Value |
-| ----- | ----- |
-| New branch | `feature/example-name` |
+| Field       | Value                                                                |
+| ----------- | -------------------------------------------------------------------- |
+| New branch  | `feature/example-name`                                               |
 | Base branch | `develop` (default; will fetch + update from origin before creating) |
-| Current branch | `<name>` |
-| Working tree | clean, or dirty (list notable paths if dirty) |
 
-Do you approve? You can change the branch name or the base: develop, current branch, or another.
+The Base branch row must state which branch the new branch is created from. When that is not the current branch, say so in the row (e.g. `develop (not your current branch; will fetch + update from origin before creating)`). When it is the current branch, write `current (feature/foo), no pull unless you ask`.
 
-Adjust the Base branch row when not using `develop`, for example:
+If the working tree is dirty, add one line naming the paths that carry over. Otherwise say nothing about it.
 
-- `current (feature/foo), will not update develop`
-- `main (fetch + update from origin)`
-
-Do not create the branch until the user confirms (they may edit name or base).
+Do not create the branch until the user confirms.
 
 ### 4. Update base from remote (when base is develop or another remote branch)
 
@@ -161,66 +159,45 @@ git --no-pager log -1 --oneline
 
 If creation fails, stop and report; do not force (`-B` / reset) unless the user explicitly asks to replace a branch.
 
-Do not commit, push, or open a PR in this skill unless the user separately asks (then use `commit`, `create-pr`, or `branch-commit-pr`).
+Do not commit, push, or open a PR in this skill unless the user separately asks (then use `commit` or `create-pr`).
+
+Leave the user on the new branch at the end.
 
 ### 6. Final report
 
 Return a rendered markdown table:
 
-| Result | Value |
-| ------ | ----- |
-| New branch | name, and that it is checked out |
-| Base used | branch the new branch was created from |
-| Fetch / fast-forward status | whether remote was fetched, whether base was fast-forwarded or skipped |
-| Upstream tracking | tracking status, usually none yet because there was no push |
-| Working tree status | status after the switch |
-| Warnings | dirty tree carried over, skipped pull, or other warnings; use `None` if there are none |
-
-## Important constraints
-
-- Always confirm branch name and base branch before creating.
-- Default base is `develop`, updated from remote before branch creation.
-- Creating from current branch is allowed and common when requested or confirmed.
-- Allowed prefixes only: `feature/`, `fix/`, `chore/`.
-- Branch slug language: English only.
-- Name comes from the task description the user gives or from conversation context, do not invent unrelated slugs.
-- Never push unless the user explicitly asks after this skill.
-- Never discard or reset user changes to "clean" the tree without an explicit ask.
-- Never overwrite an existing branch without explicit approval.
-- Leave the user on the new branch at the end.
+| Result                      | Value                                                                                  |
+| --------------------------- | -------------------------------------------------------------------------------------- |
+| New branch                  | name, and that it is checked out                                                       |
+| Base used                   | branch the new branch was created from                                                 |
+| Fetch / fast-forward status | whether remote was fetched, whether base was fast-forwarded or skipped                 |
+| Upstream tracking           | tracking status, usually none yet because there was no push                            |
+| Working tree status         | status after the switch                                                                |
+| Warnings                    | dirty tree carried over, skipped pull, or other warnings; use `None` if there are none |
 
 ## Failure shortcuts
 
-| Situation                            | Action                                                |
-| ------------------------------------ | ----------------------------------------------------- |
-| No task context for a slug           | Ask what the branch is for, then propose a name       |
-| Unknown prefix                       | Ask feature vs fix vs chore once                      |
-| Local branch name already exists     | Propose another name; do not overwrite                |
-| `develop` missing locally and remote | Report; ask for another base                          |
-| `pull --ff-only` fails               | Stop; report divergence; ask how to proceed           |
-| Dirty tree blocks checkout           | Report conflicts; offer stash or stay put             |
-| User rejects plan                    | Do not create anything; wait for a revised plan       |
+| Situation                            | Action                                          |
+| ------------------------------------ | ----------------------------------------------- |
+| No task context for a slug           | Ask what the branch is for, then propose a name |
+| `develop` missing locally and remote | Report; ask for another base                    |
+| User rejects plan                    | Do not create anything; wait for a revised plan |
 
 ## Example confirmation (default develop)
 
-| Field | Value |
-| ----- | ----- |
-| New branch | `feature/user-search` |
-| Base branch | `develop` (default; will fetch + update from origin before creating) |
-| Current branch | `develop` |
-| Working tree | clean |
-
-Do you approve? You can change the branch name or the base: develop, current branch, or another.
+| Field       | Value                                                                                |
+| ----------- | ------------------------------------------------------------------------------------ |
+| New branch  | `feature/user-search`                                                                |
+| Base branch | `develop` (not your current branch; will fetch + update from origin before creating) |
 
 ## Example confirmation (from current)
 
-| Field | Value |
-| ----- | ----- |
-| New branch | `fix/locker-date-validation` |
+| Field       | Value                                                   |
+| ----------- | ------------------------------------------------------- |
+| New branch  | `fix/locker-date-validation`                            |
 | Base branch | `current (feature/lockers-api)`, no pull unless you ask |
-| Current branch | `feature/lockers-api` |
-| Working tree | dirty (`app/Models/Locker.php`) |
 
-Do you approve?
+Working tree is dirty; `app/Models/Locker.php` carries over.
 
 After approval, update base if needed, run `git checkout -b <approved-name>`, then report.
